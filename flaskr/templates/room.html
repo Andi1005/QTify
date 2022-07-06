@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1><a href="{{ url_for('index') }}">Group Playlist</a></h1>
+
+<div class="current-song"></div>
+
+<div class="song-queue"></div>
+
+<div class="search-bar">
+    <form class="search-bar">
+        <input class="back-btn" type="button">
+        <input class="search-field" type="text" value="Search...">
+        <input class="search-btn" type="submit">
+    </form>
+</div>
+
+<div class="song-recomendations"></div>
+
+{% endblock %}
