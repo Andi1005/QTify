@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1 class="project-name button"><a href="{{ url_for('index') }}">Group Playlist</a></h1>
+
+<a class="join-btn button" href="{{ url_for('join') }}">Raum betreten</a>
+<a class="host-btn button" href="{{ user_auth_request }}">Raum erstellen</a>
+
+<div class="credits">
+    <p>A programm made by Andreas Hars</p>
+    <p>Check out my <a class="link" href="https://github.com/Andi1005" target="_blank">GitHub</a></p>
+</div>
+{% endblock %}

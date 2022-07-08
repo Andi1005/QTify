@@ -33,19 +33,30 @@ def host():
     if request.method == "POST":
         pass
         #Update settings
-    
+
     return render_template("host.html")
 
-@app.route("/join")
+@app.route("/join", methods=("GET", "POST"))
 def join():
-    pass
+    args = request.args
+    pin = args.get("pin")
+    print(pin)
 
-@app.route("/room", methods=("GET", "POST"))
-def room():
+    if request.method == "POST":
+        if pin is not None:
+            return redirect(url_for('room', pin=pin))
+
+    return render_template("join.html")
+
+@app.route("/room/<int:pin>", methods=("GET", "POST"))
+def room(pin):
+    args = request.args
+    pin = args.get("pin")
+
     if request.method == "POST":
         pass
         #Add song to queue
-    
+
     return render_template("room.html")
 
 
