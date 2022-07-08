@@ -2,10 +2,33 @@
 
 {% block content %}
 <form class="host-settings">
-    <div>
-        <input type="checkbox" id="setting1" name="setting1" value="0">
-        <label for="setting1">Setting 1</label>
+
+    <div class="setting">
+        <label for="setting1">Users can skip songs</label>
+        <input type="checkbox" id="setting1" name="allow_skip" value="1">
     </div>
-    <input class="submit" type="submit" value="save">
+    <div class="setting">
+        <label for="setting2">Users needed to skip</label>
+        <input type="text" id="setting2" name="skip_min_users" value="1">
+    </div>
+    <div class="setting">
+        <label for="setting3">Room password</label>
+        <input type="text" id="setting3" name="password">
+    </div>
+    <div class="setting">
+        <label for="setting4">Slow Mode</label>
+        <input type="checkbox" id="setting4" name="slow_mode" value="1">
+    </div>
+    <div class="setting">
+        <label for="setting5">Songs to activate Slow Mode</label>
+        <input type="text" id="setting5" name="slow_mode_min_songs" value="10">
+    </div>
+    <div class="setting">
+        <label for="setting6">Slow Mode cooldown</label>
+        <input type="text" id="setting6" name="slow_mode_cooldown" value="120">
+    </div>
+
+    <input class="submit" type="submit" value="Save changes">
   </form>
+
 {% endblock %}

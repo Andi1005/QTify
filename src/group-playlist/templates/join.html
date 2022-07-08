@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<h1 class="app-title"><a href="{{ url_for('index') }}">Group Playlist</a></h1>
 
-<h2 class="headline">Betrete ein Raum</h2>
-
-<form class="pin-input" method="post">
-    <input class="pin-textfield" type="text" name="pin" placeholder="Raum Pin"><br/>
-    <input class="submit-btn" type="submit" value="Join">
+<form class="pin-form" method="post">
+    <h2 class="headline">Betrete ein Raum</h2>
+    <input class="pin-textfield input" type="text" name="pin" placeholder="Raum Pin"><br/>
+    <input class="submit-btn input" type="submit" value="Join">
 </form>
 <div class="credits">
     <p>A programm made by Andreas Hars</p>
