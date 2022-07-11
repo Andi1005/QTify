@@ -1,12 +1,12 @@
-import requests, base64, json
+import requests, base64, json, time
 
 from flask import url_for
 from urllib.parse import urlencode
 
 from secret import client_id, client_secret
 
-url = "https://accounts.spotify.com"
-server_url = "http://localhost:5000"
+spotify_url = "https://accounts.spotify.com"
+redirect_url = "http://localhost:5000" + url_for("redirect_page")
 
 def generate_client_auth():
     message = f"{client_id}:{client_secret}"
@@ -22,14 +22,14 @@ def request_user_authorization(scope):
         "response_type": "code",
         "client_id": client_id,
         "scope": scope,
-        "redirect_uri": server_url + url_for("redirect_page"),
+        "redirect_uri": redirect_url,
         "state": "true"
     }
 
     print(query)
 
     query_string = urlencode(query)
-    redirect_url = url + endpoint + query_string
+    redirect_url = spotify_url + endpoint + query_string
 
     return redirect_url
 
@@ -42,11 +42,17 @@ def request_access_token(code):
     data = {
         "grant_type": "authorization_code",
         "code": code,
-        "redirect_uri": server_url + url_for("redirect_page"),
+        "redirect_uri": redirect_url
     }
 
-    r = requests.post(url + endpoint, headers=headers, data=data)
-    print(json.dumps(r.json(), indent=2))
+    response = requests.post(spotify_url + endpoint, headers=headers, data=data) # -> access_token, token_type, espires_in, refresh_token, scope
+    response_dict = response.json()
+
+    access_token = response_dict["access_token"]
+    expires_at = time.time() + response_dict["expires_in"]
+    refresh_token = response_dict["refresh_token"]
+
+    return [access_token, expires_at, refresh_token]
 
 def refresh_access_token(refresh_token):
     endpoint = "/api/token"
@@ -59,5 +65,5 @@ def refresh_access_token(refresh_token):
         "code": refresh_token,
     }
 
-    r = requests.post(url + endpoint, headers=headers, data=data)
+    r = requests.post(spotify_url + endpoint, headers=headers, data=data)
     print(json.dumps(r.json(), indent=2))
