@@ -2,20 +2,27 @@
 
 {% block content %}
 
-<h1 class="project-name"><a href="{{ url_for('index') }}">Group Playlist</a></h1>
+<h1 class="project-name"><a href="{{ url_for('views.index') }}">Group Playlist</a></h1>
 
-<div class="current-song"></div>
-
-<div class="song-queue"></div>
+<div class="current-song">
+    <img id="track-image">
+    <span>
+        <p id="track-name"></p>
+        <p id="track-artists"></p>
+        <progress id="track-progress"></progress>
+    </span>
+</div>
 
 <div class="search-bar">
     <form class="search-bar">
         <input class="back-btn" type="button">
-        <input class="search-field" type="text" value="Search...">
-        <input class="search-btn" type="submit">
+        <input id="search-field" type="text">
+        <input class="search-btn" type="submit" value="Search...">
     </form>
 </div>
 
 <div class="song-recomendations"></div>
+
+<script src="{{ url_for('static', filename='room.js')}}"></script>
 
 {% endblock %}

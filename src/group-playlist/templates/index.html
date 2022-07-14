@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1 class="app-title"><a href="{{ url_for('index') }}">Group Playlist</a></h1>
+<h1 class="app-title"><a href="{{ url_for('views.index') }}">Group Playlist</a></h1>
 
-<a class="join-btn input" href="{{ url_for('join') }}">Raum betreten</a>
-<a class="host-btn input" href="{{ user_auth_request }}">Raum erstellen</a>
+<a class="join-btn input" href="{{ url_for('views.join') }}">Raum betreten</a>
+<a class="host-btn input" href="{{ url_for('views.host') }}">Raum erstellen</a>
 
 <div class="credits">
     <p>A programm made by Andreas Hars</p>

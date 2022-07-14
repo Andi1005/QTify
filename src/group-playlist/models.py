@@ -18,3 +18,11 @@ class Rooms(db.Model):
         self.access_token = access_token
         self.expires_at = expires_at
         self.refresh_token = refresh_token
+
+    def to_dict(self):
+        return {
+            "pin": self.pin,
+            "access_token": self.access_token,
+            "expires_at": self.expires_at,
+            "refresh_token": self.refresh_token
+        }

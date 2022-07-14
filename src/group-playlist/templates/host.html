@@ -1,8 +1,13 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<form class="host-settings">
 
+<h2>You are now host of room {{ pin }}.</h2>
+
+<a href="{{ url_for('views.room', pin=pin) }}" class="button">Visit room</a>
+<a href="{{ url_for('views.sign_out') }}" calss="button">Sign out</a>
+
+<form class="host-settings" action="POST">
     <div class="setting">
         <label for="setting1">Users can skip songs</label>
         <input type="checkbox" id="setting1" name="allow_skip" value="1">
@@ -29,6 +34,8 @@
     </div>
 
     <input class="submit" type="submit" value="Save changes">
-  </form>
+</form>
+
+
 
 {% endblock %}

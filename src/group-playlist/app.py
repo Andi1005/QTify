@@ -2,21 +2,21 @@ import os
 
 from flask import Flask
 
-from models import init_db
-from secret import secret_key
-from views import views
+from secret import SECRET_KEY
 
 
 def create_app():
     app = Flask(__name__)
-    app.config["SECRET_KEY"] = secret_key
+    app.config["SECRET_KEY"] = SECRET_KEY
 
     db_path = os.path.join(app.instance_path, "instance/gp.sqlite3")
+    db_path = "gp.sqlite3"
     app.config ["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{db_path}"
 
     from models import db
     db.init_app(app)
-    db.create_all()
+    with app.app_context():
+        db.create_all()
 
     from views import views
     app.register_blueprint(views)
@@ -25,5 +25,6 @@ def create_app():
 
 
 if __name__ == "__main__":
+    # TODO: delete database
     app = create_app()
     app.run(debug=True)
