@@ -2,26 +2,41 @@
 
 {% block content %}
 
-<h1 class="project-name"><a href="{{ url_for('views.index') }}">Group Playlist</a></h1>
+<header>
+    <h1 class="app-title"><a class="app-title" href="{{ url_for('views.index') }}">Group Playlist</a></h1>
+</header>
 
-<div class="current-song">
-    <img id="track-image">
-    <span>
-        <p id="track-name"></p>
-        <p id="track-artists"></p>
+<mian>
+    <section id="current-track-container">
+        <p>Currently Playing:</p>
+        <div class="current-track track-preview">
+            <img class="track-image" id="current-track-image">
+            <span>
+                <p class="track-name" id="current-track-name"></p>
+                <p class="track-artists" id="current-track-artists"></p>
+            </span>
+        </div>
+        <p id="no-track-error">Couln't find a playing song</p>
         <progress id="track-progress"></progress>
-    </span>
-</div>
+    </section>
+    
+    <section>
+        <div class="search-bar">
+            <button class="back-btn">
+            <input id="search-field" type="text">
+            <button class="search-btn" value="Search...">
+        </div>
+        <p id="no-search-result-error">Try searching for a song</p>
+        <div id="search-results">
+            <!-- Search result are generated here from room.js -->
+        </div>
+    </section>
+</mian>
 
-<div class="search-bar">
-    <form class="search-bar">
-        <input class="back-btn" type="button">
-        <input id="search-field" type="text">
-        <input class="search-btn" type="submit" value="Search...">
-    </form>
-</div>
-
-<div class="song-recomendations"></div>
+<footer>
+    <p>A programm made by Andreas Hars</p>
+    <p>Check out my <a class="link" href="https://github.com/Andi1005" target="_blank">GitHub</a></p>
+</footer>
 
 <script src="{{ url_for('static', filename='room.js')}}"></script>
 

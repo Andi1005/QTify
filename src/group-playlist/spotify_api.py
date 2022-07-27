@@ -9,8 +9,22 @@ import auth
 
 
 @auth.check_token
-def add_to_queue():
-    pass
+def add_to_queue(room, track_uri):
+    endpoint = "https://api.spotify.com/v1/me/player/queue?"
+    headers = {
+        "Authorization": f"Bearer {room.access_token}"
+    }
+    query = {
+        "uri": track_uri,
+    }
+    query_string = urlencode(query)
+    print(endpoint + query_string)
+    response = requests.post(endpoint + query_string, headers=headers)
+
+    if response.status_code == 204:
+        return "Added to Playback queue.", 204
+    else:
+        return response.json()
 
 
 @auth.check_token

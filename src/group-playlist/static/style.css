@@ -1,117 +1,93 @@
+
+/* General document structure */
 * {
     margin: 0;
     padding: 0;
-
+    border: 1px solid black;
     font-family: Arial;
     text-decoration: none;
-    color: white;
 }
 
 html, body {
     height: 100%;
     background: #20222b;
+    overflow: hidden;
 }
 
 .content {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-    text-align: center;
-}
-
-.app-title {
-  margin-top: 5%;
-  font-size: 3.5rem;
-}
-
-.app-title:hover {
-  font-size: 3.6rem;
-  transition: font-size 0.4s;
-}
-
-.input {
+  height: 100%;
+  width: 100%;
+  outline: 2% 5%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-around;
+  align-items: center;
   text-align: center;
-
-  box-sizing: border-box;
-  border-style: solid;
-  border-width: 5px;
-  border-radius: 10px;
-  border-color: black;
-
-  font-size: 2rem;
 }
 
-.join-btn, .host-btn {
-  width: 55vw;
-  height: 15vh;
+mian {
+  width: 75%;
+  min-width: 350px;
 }
 
-.join-btn:hover, .host-btn:hover {
-  width: 56vw;
-  height: 16vh;
-  transition: width 0.2s, height 0.2s;
+section {
+  margin: 5% 0%;
 }
 
-.join-btn {
-  background: #2ab85c;
+header .app-title{
+  font-size: 3.2rem;
+  color: white;
 }
 
-.host-btn {
-  background: #469fe3;
+footer {
+  font-size: 1.2rem;
+  color: white;
 }
 
-.credits {
-  margin-bottom: 5%;
+/* ---Very short screen (mobile keyboard)--- */
+@media only screen and (max-height: 550px) {
+  #current-track-container, footer {
+    display: none;
+  }
+
+  header .app-title{
+    font-size: 2.8rem;
+    color: white;
+  }
 }
 
-.link {
-  color: #4251f5;
-  text-decoration: underline;
+/* ---Specific to room.html--- */
+
+img.track-image {
+  width: 64px;
+  height: 64px;
 }
 
-.pin-form {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+#search-results{
+  visibility: visible;
+  min-height: 100px;
+  max-height: 40vh;
+  width: 100%;
+  overflow-y: scroll;
 }
 
-.headline {
-  font-size: 2.4rem;
-  margin: 10px;
-}
-
-.submit-btn, .pin-textfield {
-  width: 55vw;
-  height: 10vh;
-  font-size: 2rem;
-  margin: 5px;
-}
-
-.submit-btn:hover {
-  width: 56vw;
-  height: 11vh;
-  transition: width 0.2s, height 0.2s;
-}
-
-.submit-btn {
-  background-color: #f56942;
+.track-preview {
   display: flex;
   align-items: center;
 }
 
-.pin-textfield {
-  border-color: #f56942;
-  color: #f56942;
-  background-color: rgba(255, 255, 255, 0)
+.track-artists, .track-name {
+  width: auto;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: left;
 }
 
-.setting {
-  display: flex;
-  justify-content: space-between;
+#track-progress {
+  width: 100%;
+}
+
+#no-track-error {
+  display: none;
 }

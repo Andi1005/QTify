@@ -11,10 +11,20 @@ function requestTrackInfo() {
   trackInfoReq.send();
 }
 
+//recive response
 trackInfoReq.onreadystatechange = function(){
-  if (this.readyState == 4 && this.status == 200) {
-    trackInfo = JSON.parse(trackInfoReq.responseText);
-    updateTrackInfo(trackInfo);
+  if (this.readyState == 4) {
+    if (this.status == 200) {
+      document.querySelector(".current-track").style.display = "flex"
+      document.querySelector("#no-track-error").style.display = "none"
+
+      trackInfo = JSON.parse(trackInfoReq.responseText);
+      updateTrackInfo(trackInfo);
+    }
+    else if ( this.status == 204) { //There is no song playing
+      document.querySelector(".current-track").style.display = "none"
+      document.querySelector("#no-track-error").style.display = "block"
+    }
   }
 }
 
@@ -27,11 +37,11 @@ let isPlaying = false;
 let progress = 0;
 
 function updateTrackInfo(trackInfo) {
-  document.getElementById("current-track-image").src = trackInfo.image;
-  document.getElementById("current-track-name").innerHTML = trackInfo.name;
-  document.getElementById("current-track-artists").innerHTML = trackInfo.artists;
-  document.getElementById("track-progress").max = trackInfo.duration_ms/1000;
-  document.getElementById("track-progress").value = trackInfo.progress_ms/1000;
+  document.querySelector("#current-track-image").src = trackInfo.image;
+  document.querySelector("#current-track-name").innerHTML = trackInfo.name;
+  document.querySelector("#current-track-artists").innerHTML = trackInfo.artists;
+  document.querySelector("#track-progress").max = trackInfo.duration_ms/1000;
+  document.querySelector("#track-progress").value = trackInfo.progress_ms/1000;
 
   isPlaying = trackInfo.is_playing;
   progress = trackInfo.progress_ms/1000;
@@ -46,34 +56,83 @@ function updateTrackInfo(trackInfo) {
 const progressUpdateInterval = 200;
 
 window.setInterval(function(){
+  // Update progress bar
   progressBar = document.getElementById("track-progress")
   if (isPlaying) {
     progressBar.value += progressUpdateInterval/1000
   }
   else {
-    //ensures that the progress bar stops at the right time
+    // Ensures that the progress bar stops at the right time
     document.getElementById("track-progress").value = progress
   }
   
 }, progressUpdateInterval);
 
 
+//Send a request on search bar input to /search endpoint
 const searchRequest = new XMLHttpRequest();
-
 document.getElementById("search-field").addEventListener('input', function (evt) {
   searchRequest.open("GET", url + "/search?q=" + this.value + "&pin=" + pin);
   searchRequest.send(); 
 });
 
+function buildSearchResultElem() {
+  const newSearchResult = document.createElement("div");
+  newSearchResult.classList.add("track-preview");
+
+  const trackImage = document.createElement("img");
+  trackImage.classList.add("track-image");
+  newSearchResult.appendChild(trackImage);
+
+  const container = document.createElement("span");
+  newSearchResult.appendChild(container);
+
+  const trackName = document.createElement("p");
+  trackName.classList.add("track-name");
+  container.appendChild(trackName);
+
+  const trackArtists = document.createElement("p");
+  trackArtists.classList.add("track-artists");
+  container.appendChild(trackArtists);
+
+  return newSearchResult
+}
+
+
+function generateOnClick(track_uri) {
+  function addToQueue() {
+    const addToQueueReq = new XMLHttpRequest();
+    addToQueueReq.open("POST", url + "/queue?pin=" + pin + "&uri=" + track_uri);
+    addToQueueReq.send();
+  }
+  return addToQueue
+}
+
+//Recive request response
 searchRequest.onreadystatechange = function(){
   if (this.readyState == 4 && this.status == 200) {
-    tracks = JSON.parse(searchRequest.responseText);
+    document.querySelector("#no-search-result-error").style.display = "none"
+
+    tracks = JSON.parse(searchRequest.responseText).tracks;
 
     searchResultContainer = document.getElementById("search-results")
-    searchResultElements = searchResultContainer.getElementsByClassName("search-result")
+    searchResultElements = searchResultContainer.getElementsByClassName("track-preview")
+    let elem = null
 
-    for (let track of tracks.tracks) {
-      console.log(track.name);
+    // Update every search result element
+    for (let i = 0; i<tracks.length; i++){
+      track = tracks[i];
+
+      elem = searchResultElements[i];
+      if (elem == null) {
+          elem = buildSearchResultElem();
+          searchResultContainer.appendChild(elem);
+      }
+ 
+      elem.onclick = generateOnClick(track.uri)
+      elem.querySelector(".track-image").src = track.image;
+      elem.querySelector(".track-name").innerHTML = track.name;
+      elem.querySelector(".track-artists").innerHTML = track.artists;
     }
   }
 };

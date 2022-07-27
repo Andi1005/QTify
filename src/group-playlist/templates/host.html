@@ -1,41 +1,32 @@
 {% extends 'base.html' %}
 
 {% block content %}
+    <header>
+        <h1 class="app-title"><a class="app-title" href="{{ url_for('views.index') }}">Group Playlist</a></h1>
+    </header>
 
-<h2>You are now host of room {{ pin }}.</h2>
+    <mian>
+        <section>
+            <h2>You are now host of room {{ pin }}.</h2>
+        </section>
+    
+        <section>
+            <a href="{{ url_for('views.room', pin=pin) }}" class="button">Visit room</a>
+            <a href="{{ url_for('views.sign_out') }}" calss="button">Sign out</a>
+        </section>
+    
+        <section> 
+            <button>Settings</button>
+            <form class="host-settings" action="POST">
+                <input type="number" id="pin-length" name="pin_length" value="4" min="4" max="16">
+                <label for="pin-length">Pin length</label>
+            </form>
+        </section>
+    </mian>
 
-<a href="{{ url_for('views.room', pin=pin) }}" class="button">Visit room</a>
-<a href="{{ url_for('views.sign_out') }}" calss="button">Sign out</a>
-
-<form class="host-settings" action="POST">
-    <div class="setting">
-        <label for="setting1">Users can skip songs</label>
-        <input type="checkbox" id="setting1" name="allow_skip" value="1">
-    </div>
-    <div class="setting">
-        <label for="setting2">Users needed to skip</label>
-        <input type="text" id="setting2" name="skip_min_users" value="1">
-    </div>
-    <div class="setting">
-        <label for="setting3">Room password</label>
-        <input type="text" id="setting3" name="password">
-    </div>
-    <div class="setting">
-        <label for="setting4">Slow Mode</label>
-        <input type="checkbox" id="setting4" name="slow_mode" value="1">
-    </div>
-    <div class="setting">
-        <label for="setting5">Songs to activate Slow Mode</label>
-        <input type="text" id="setting5" name="slow_mode_min_songs" value="10">
-    </div>
-    <div class="setting">
-        <label for="setting6">Slow Mode cooldown</label>
-        <input type="text" id="setting6" name="slow_mode_cooldown" value="120">
-    </div>
-
-    <input class="submit" type="submit" value="Save changes">
-</form>
-
-
+    <footer>
+        <p>A programm made by Andreas Hars</p>
+        <p>Check out my <a class="link" href="https://github.com/Andi1005" target="_blank">GitHub</a></p>
+    </footer>
 
 {% endblock %}

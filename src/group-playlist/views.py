@@ -147,3 +147,20 @@ def search():
         return "Missing search string", 400
 
     return api.search(room, q)
+
+
+@views.route("/queue", methods=("POST",))
+def add_to_queue():
+    pin = request.args.get("pin")
+    if pin is None:
+        return "Missing pin", 400
+
+    room = db.session.query(Rooms).filter_by(pin=pin).first()
+    if room is None:
+        return "Room doesn't exist", 400
+
+    track_uri = request.args.get("uri")
+    if not track_uri:
+        return "Missing track uri", 400
+
+    return api.add_to_queue(room, track_uri)
