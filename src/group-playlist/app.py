@@ -12,6 +12,8 @@ def create_app():
     db_path = os.path.join(app.instance_path, "instance/gp.sqlite3")
     db_path = "gp.sqlite3"
     app.config ["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{db_path}"
+    app.config ["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
 
     from models import db
     db.init_app(app)

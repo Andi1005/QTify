@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<header>
+    <h1 class="app-title"><a class="app-title" href="{{ url_for('views.index') }}">Group Playlist</a></h1>
+</header>
+
+<mian>
+    <section>
+        <form class="create-form" action="#" method="POST">
+            <input class="create-form-input" type="number" id="pin-length" name="pin_length" value="6" min="4" max="16">
+            <label class="create-form-label" for="pin-length">Pin length</label>
+            <select class="create-form-input" id="room-lifespan" name="lifespan">
+                <option value="8" selected>8 Std.</option>
+                <option value="12">12 Std.</option>
+                <option value="24">1 Tag</option>
+                <option value="48">2 Tage</option>
+                <option value="-1">Unbegrenzt</option>
+            </select>
+            <label class="create-form-label" for="room-lifespan">Room lifespan</label>
+            <input class="create-form-input" type="checkbox" id="users-can-skip" name="skip" value="1">
+            <label class="create-form-label" for="users-can-skip">Users can skip</label>
+            <input class="create-form-submit" type="submit" value="Login with Spotify and create a Room">
+        </form>
+    </section>
+</mian>
+
+<footer>
+    <p>A programm made by Andreas Hars</p>
+    <p>Check out my <a class="link" href="https://github.com/Andi1005" target="_blank">GitHub</a></p>
+</footer>
+
+{% endblock %}

@@ -8,34 +8,47 @@
 
 <mian>
     <section id="current-track-container">
-        <p>Currently Playing:</p>
-        <div class="current-track track-preview">
-            <img class="track-image" id="current-track-image">
-            <span>
-                <p class="track-name" id="current-track-name"></p>
-                <p class="track-artists" id="current-track-artists"></p>
-            </span>
+        <p>Aktueller Song:</p>
+        <div id="current-track-horizontal-container">
+            <div class="current-track track-preview">
+                <img class="track-image" id="current-track-image">
+                <span>
+                    <p class="track-name" id="current-track-name"></p>
+                    <p class="track-artists" id="current-track-artists"></p>
+                </span>
+            </div>
+            <p id="is-paused">Pausiert</p>
         </div>
-        <p id="no-track-error">Couln't find a playing song</p>
         <progress id="track-progress"></progress>
     </section>
     
-    <section>
+    <section id="search">
         <div class="search-bar">
-            <button class="back-btn">
-            <input id="search-field" type="text">
-            <button class="search-btn" value="Search...">
+            <button class="search-back-btn" onclick="closeSearchBar()">
+                <span class="material-symbols-outlined">
+                    close
+                </span>
+            </button>
+            <input id="search-field" class="search-field" type="text" placeholder="Suche nach Songs...">
+            <button class="search-btn"  onclick="searchRecommendation()">
+                <span class="material-symbols-outlined">
+                    search
+                </span>
+            </button>
         </div>
-        <p id="no-search-result-error">Try searching for a song</p>
         <div id="search-results">
             <!-- Search result are generated here from room.js -->
         </div>
     </section>
+
+    <section id="not-activ-error">
+        <p>Anscheinend ist Spotify grade nicht aktiv :(<br/>Öffne die Spotify App und starte einen Song</p>
+    </section>
 </mian>
 
 <footer>
-    <p>A programm made by Andreas Hars</p>
-    <p>Check out my <a class="link" href="https://github.com/Andi1005" target="_blank">GitHub</a></p>
+    <p>Ein Programm von Andreas Hars</p>
+    <p>Besuche mein <a class="link" href="https://github.com/Andi1005" target="_blank">GitHub</a></p>
 </footer>
 
 <script src="{{ url_for('static', filename='room.js')}}"></script>

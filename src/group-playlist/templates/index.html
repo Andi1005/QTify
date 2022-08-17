@@ -6,9 +6,10 @@
 </header>
 
 <mian>
-    <a class="join-btn input" href="{{ url_for('views.join') }}">Raum betreten</a>
-
-    <a class="host-btn input" href="{{ url_for('views.host') }}">Raum erstellen</a>
+    <div id="button-container">
+        <a class="join-btn" href="{{ url_for('views.join') }}">Raum betreten</a>
+        <a class="host-btn" href="{{ url_for('views.host') }}">Raum erstellen</a>  
+    </div>
 </mian>
 
 <footer>

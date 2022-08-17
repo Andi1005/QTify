@@ -10,18 +10,10 @@
             <h2>You are now host of room {{ pin }}.</h2>
         </section>
     
-        <section>
-            <a href="{{ url_for('views.room', pin=pin) }}" class="button">Visit room</a>
-            <a href="{{ url_for('views.sign_out') }}" calss="button">Sign out</a>
-        </section>
-    
-        <section> 
-            <button>Settings</button>
-            <form class="host-settings" action="POST">
-                <input type="number" id="pin-length" name="pin_length" value="4" min="4" max="16">
-                <label for="pin-length">Pin length</label>
-            </form>
-        </section>
+        <div>
+            <a href="{{ url_for('views.room', pin=pin) }}" class="visit-room-btn button">Visit room</a>
+            <a href="{{ url_for('views.sign_out') }}" class="sign-out-btn button">Sign out</a>
+        </div>
     </mian>
 
     <footer>

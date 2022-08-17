@@ -1,40 +1,60 @@
-const href = window.location.pathname;
-const pin = href.match(/[0-9]{4}/);
-const url = "http://localhost:5000"
+const pin = window.location.pathname.match(/[0-9]+/);
+const url = `${window.location.protocol}//${window.location.hostname}:${window.location.port}`
+
+const updateInterval = 60000
+
+let spotifyIsActitiv;
+
+let recommendations = [];
+let recomsIdx = 0;
+
+let trackEndsIn;
+let isPlaying = false;
+let progress = 0;
+
+
+function buildQueryString(endpoint, query) {
+  const params = new URLSearchParams(query);
+  return url + endpoint + "?" + params.toString();
+}
+
 
 const trackInfoReq = new XMLHttpRequest();
-
-const updateInterval = 60000 // debug, normal is about 1-5s
-
 function requestTrackInfo() {
-  trackInfoReq.open("GET", url + "/current-track?pin=" + pin);
+  trackInfoReq.open("GET", buildQueryString("/current-track", {pin: pin}));
   trackInfoReq.send();
 }
+
 
 //recive response
 trackInfoReq.onreadystatechange = function(){
   if (this.readyState == 4) {
     if (this.status == 200) {
-      document.querySelector(".current-track").style.display = "flex"
-      document.querySelector("#no-track-error").style.display = "none"
+      spotifyIsActitiv = true;
+      document.querySelector("#current-track-container").style.display = "block";
+      document.querySelector("#search").style.display = "block";
+      document.querySelector("#not-activ-error").style.display = "none";
 
       trackInfo = JSON.parse(trackInfoReq.responseText);
       updateTrackInfo(trackInfo);
+
+      recommendations = trackInfo.similar_tracks;
+      recomsIdx = 0;
     }
-    else if ( this.status == 204) { //There is no song playing
-      document.querySelector(".current-track").style.display = "none"
-      document.querySelector("#no-track-error").style.display = "block"
+    
+    else if ( this.status == 204) { //Spotify isn't activ
+      spotifyIsActitiv = false;
+      document.querySelector("#current-track-container").style.display = "none";
+      document.querySelector("#search").style.display = "none";
+      document.querySelector("#not-activ-error").style.display = "block";
     }
   }
 }
 
-requestTrackInfo();
+
+requestTrackInfo(); //Call once at start
 window.setInterval(requestTrackInfo, updateInterval);
 
-
-let trackEndsIn;
-let isPlaying = false;
-let progress = 0;
 
 function updateTrackInfo(trackInfo) {
   document.querySelector("#current-track-image").src = trackInfo.image;
@@ -43,9 +63,16 @@ function updateTrackInfo(trackInfo) {
   document.querySelector("#track-progress").max = trackInfo.duration_ms/1000;
   document.querySelector("#track-progress").value = trackInfo.progress_ms/1000;
 
+  if (trackInfo.is_playing) {
+    document.querySelector("#is-paused").style.display = "none"
+  } else {
+    document.querySelector("#is-paused").style.display = "block"
+  }
+
   isPlaying = trackInfo.is_playing;
   progress = trackInfo.progress_ms/1000;
 
+  // request the new track after the current ends
   trackEndsIn = trackInfo.duration_ms - trackInfo.progress_ms;
   setTimeout(function(){
     requestTrackInfo();
@@ -72,13 +99,52 @@ window.setInterval(function(){
 //Send a request on search bar input to /search endpoint
 const searchRequest = new XMLHttpRequest();
 document.getElementById("search-field").addEventListener('input', function (evt) {
-  searchRequest.open("GET", url + "/search?q=" + this.value + "&pin=" + pin);
+  const queryString = buildQueryString("/search", {q: this.value, pin: pin});
+  searchRequest.open("GET", queryString);
   searchRequest.send(); 
 });
+
+
+//Recive request response
+searchRequest.onreadystatechange = function(){
+  if (this.readyState == 4) {
+    if (this.status == 200) {
+      document.querySelector("#search-results").style.display = "block";
+      document.querySelector(".search-back-btn").style.display = "block";
+
+      const tracks = JSON.parse(searchRequest.responseText).tracks;
+
+      const searchResultContainer = document.getElementById("search-results");
+      const searchResultElements = searchResultContainer.getElementsByClassName("track-preview");
+      let elem = null;
+
+      // Update every search result element
+      for (let i = 0; i<tracks.length; i++){
+        track = tracks[i];
+
+        elem = searchResultElements[i];
+        if (elem == null) {
+            elem = buildSearchResultElem();
+            searchResultContainer.appendChild(elem);
+        }
+  
+        elem.onclick = generateOnClick(track.uri);
+        elem.querySelector(".track-image").src = track.image;
+        elem.querySelector(".track-name").innerHTML = track.name;
+        elem.querySelector(".track-artists").innerHTML = track.artists;
+      } 
+    }
+    else {
+      closeSearchBar()
+    }
+  }
+};
+
 
 function buildSearchResultElem() {
   const newSearchResult = document.createElement("div");
   newSearchResult.classList.add("track-preview");
+  newSearchResult.classList.add("search-result-track");
 
   const trackImage = document.createElement("img");
   trackImage.classList.add("track-image");
@@ -95,44 +161,72 @@ function buildSearchResultElem() {
   trackArtists.classList.add("track-artists");
   container.appendChild(trackArtists);
 
-  return newSearchResult
+  return newSearchResult;
 }
 
 
 function generateOnClick(track_uri) {
   function addToQueue() {
     const addToQueueReq = new XMLHttpRequest();
-    addToQueueReq.open("POST", url + "/queue?pin=" + pin + "&uri=" + track_uri);
+    const queryString = buildQueryString("/queue", {uri: track_uri, pin: pin});
+    addToQueueReq.open("POST", queryString);
     addToQueueReq.send();
   }
   return addToQueue
 }
 
-//Recive request response
-searchRequest.onreadystatechange = function(){
-  if (this.readyState == 4 && this.status == 200) {
-    document.querySelector("#no-search-result-error").style.display = "none"
 
-    tracks = JSON.parse(searchRequest.responseText).tracks;
+const searchField = document.querySelector("#search-field");
+const defaultPlaceholder = searchField.placeholder;
+let charIdx = searchField.placeholder.length - 1;
+const speed = 60;
 
-    searchResultContainer = document.getElementById("search-results")
-    searchResultElements = searchResultContainer.getElementsByClassName("track-preview")
-    let elem = null
-
-    // Update every search result element
-    for (let i = 0; i<tracks.length; i++){
-      track = tracks[i];
-
-      elem = searchResultElements[i];
-      if (elem == null) {
-          elem = buildSearchResultElem();
-          searchResultContainer.appendChild(elem);
-      }
- 
-      elem.onclick = generateOnClick(track.uri)
-      elem.querySelector(".track-image").src = track.image;
-      elem.querySelector(".track-name").innerHTML = track.name;
-      elem.querySelector(".track-artists").innerHTML = track.artists;
-    }
+function cycleTrackRecommendations() {
+  if (searchField.value == "") {
+    removePlaceholder("Versuch's mal mit \"" + recommendations[recomsIdx] + "\"...");   
   }
-};
+}
+
+
+function removePlaceholder(newPlaceholder) {
+  if (charIdx >= 0) {
+    searchField.placeholder = searchField.placeholder.slice(0, charIdx);
+    charIdx--;
+    setTimeout(function (){removePlaceholder(newPlaceholder)}, speed);
+  }
+  else {
+    addPlaceholder(newPlaceholder)
+    recomsIdx ++;
+    if (recomsIdx >= recommendations.length) {
+      recomsIdx = 0;
+    } 
+  }
+}
+
+
+function addPlaceholder(newPlaceholder) {
+  if (charIdx < newPlaceholder.length) {
+    searchField.placeholder += newPlaceholder.charAt(charIdx);
+    charIdx++;
+    setTimeout(function (){addPlaceholder(newPlaceholder)}, speed);
+  }
+}
+
+window.setInterval(cycleTrackRecommendations, 15000);
+
+
+function closeSearchBar() {
+  searchField.value = ""
+  document.querySelector("#search-results").style.display = "none";
+  document.querySelector(".search-back-btn").style.display = "none";
+}
+
+
+function searchRecommendation() {
+  if (searchField.value == "" && searchField.placeholder != defaultPlaceholder) {
+    searchField.value = recommendations[recomsIdx]
+    console.log(recommendations)
+    console.log(recomsIdx)
+    document.getElementById("search-field").dispatchEvent(new Event('input'));
+  }
+}
