@@ -86,12 +86,12 @@ def refresh_access_token(refresh_token):
 
 def check_token(func):
     @functools.wraps(func)
-    def wrapper(room, *args, **kwargs):
+    def wrapper(*args, **kwargs):
         if float(g.room.token_expires_at) < time.time():
             response = refresh_access_token(g.room.refresh_token)
             g.room.access_token = response["access_token"]
             g.room.token_expires_at = response["token_expires_at"]
             db.session.commit()
 
-        return func(room, *args, **kwargs)
+        return func(*args, **kwargs)
     return wrapper

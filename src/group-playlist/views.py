@@ -129,7 +129,7 @@ def join():
 def room(pin):
     if request.method == "POST":
         track_uri = request.args.get("track_uri") # TODO: validate track_uri
-        api.add_to_queue(g.room, track_uri)
+        api.add_to_queue(track_uri)
 
     return render_template("room.html")
 
@@ -137,7 +137,7 @@ def room(pin):
 @views.route("/current-track")
 @pin_required
 def current_track(): 
-    response = api.get_current_track(g.room)
+    response = api.get_current_track()
     return response
 
 
@@ -148,7 +148,7 @@ def search():
     if not q:
         return "Missing search string", 400
 
-    return api.search(g.room, q)
+    return api.search(q)
 
 
 @views.route("/queue", methods=("POST",))
@@ -158,4 +158,10 @@ def add_to_queue():
     if not track_uri:
         return "Missing track uri", 400
 
-    return api.add_to_queue(g.room, track_uri)
+    return api.add_to_queue(track_uri)
+
+
+@views.route("/skip", methods=("POST",))
+@pin_required
+def skip():
+    return api.skip_track()

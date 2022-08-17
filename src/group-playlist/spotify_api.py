@@ -18,7 +18,7 @@ def make_header(): # All api calls need the same headers
 
 
 @auth.check_token
-def add_to_queue(room, track_uri):
+def add_to_queue(track_uri):
     endpoint = SPOTIFY_URL + "/me/player/queue?"
     query = {
         "uri":track_uri,
@@ -27,7 +27,7 @@ def add_to_queue(room, track_uri):
     response = requests.post(endpoint + query_string, headers=make_header())
 
     track_id = track_uri.split(":")[2]
-    song = Tracks(**get_track_info(track_id), room=room)
+    song = Tracks(**get_track_info(track_id), room=g.room)
     db.session.add(song)
     db.session.commit()
     if response.status_code == 204:
@@ -37,7 +37,7 @@ def add_to_queue(room, track_uri):
 
 
 @auth.check_token
-def search(room, q):
+def search(q):
     endpoint = SPOTIFY_URL + "/search?"
     query = {
         "q": q,
@@ -66,7 +66,7 @@ def search(room, q):
 
 
 @auth.check_token
-def get_current_track(room):
+def get_current_track():
     endpoint = SPOTIFY_URL + "/me/player/currently-playing"
     response = requests.get(endpoint, headers=make_header())
 
@@ -91,7 +91,7 @@ def get_current_track(room):
             "image": response_dict["item"]["album"]["images"][0]["url"],
             "artists": artists_names,
 
-            "similar_tracks": get_recommendations(room, **seed)
+            "similar_tracks": get_recommendations(**seed)
         }
 
         return track_info
@@ -125,7 +125,7 @@ def get_track_info(id):
 
 
 @auth.check_token
-def get_recommendations(room, seed_artists=[], seed_genres=[], seed_tracks=[]):
+def get_recommendations(seed_artists=[], seed_genres=[], seed_tracks=[]):
     if len(seed_artists + seed_genres + seed_tracks) > 5:
         return
 
@@ -143,3 +143,13 @@ def get_recommendations(room, seed_artists=[], seed_genres=[], seed_tracks=[]):
     if response.status_code == 200:
         response_dict = response.json()
         return [track["name"] for track in response_dict["tracks"]]
+
+
+@auth.check_token
+def skip_track():
+    endpoint = SPOTIFY_URL + "/me/player/next"
+    response = requests.post(endpoint, headers=make_header())
+    if response.status_code == 204:
+        return "Okay", 204
+    else:
+        return response.json()

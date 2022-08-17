@@ -32,7 +32,8 @@ trackInfoReq.onreadystatechange = function(){
     if (this.status == 200) {
       spotifyIsActitiv = true;
       document.querySelector("#current-track-container").style.display = "block";
-      document.querySelector("#search").style.display = "block";
+      document.querySelector("#search-bar").style.display = "flex";
+      document.querySelector("#search-results-container").style.display = "block";
       document.querySelector("#not-activ-error").style.display = "none";
 
       trackInfo = JSON.parse(trackInfoReq.responseText);
@@ -45,7 +46,8 @@ trackInfoReq.onreadystatechange = function(){
     else if ( this.status == 204) { //Spotify isn't activ
       spotifyIsActitiv = false;
       document.querySelector("#current-track-container").style.display = "none";
-      document.querySelector("#search").style.display = "none";
+      document.querySelector("#search-bar").style.display = "none";
+      document.querySelector("#search-results-container").style.display = "none";
       document.querySelector("#not-activ-error").style.display = "block";
     }
   }
@@ -109,7 +111,7 @@ document.getElementById("search-field").addEventListener('input', function (evt)
 searchRequest.onreadystatechange = function(){
   if (this.readyState == 4) {
     if (this.status == 200) {
-      document.querySelector("#search-results").style.display = "block";
+      document.querySelector("#search-results-container").style.visibility = "visible";
       document.querySelector(".search-back-btn").style.display = "block";
 
       const tracks = JSON.parse(searchRequest.responseText).tracks;
@@ -166,12 +168,22 @@ function buildSearchResultElem() {
 
 
 function generateOnClick(track_uri) {
+  const addToQueueReq = new XMLHttpRequest();
+
   function addToQueue() {
-    const addToQueueReq = new XMLHttpRequest();
     const queryString = buildQueryString("/queue", {uri: track_uri, pin: pin});
     addToQueueReq.open("POST", queryString);
     addToQueueReq.send();
   }
+
+  addToQueueReq.onreadystatechange = function(){
+    if (this.readyState == 4) {
+      if (this.status == 204) {
+        alert("Added to playback queue")
+      }
+    }
+  }
+
   return addToQueue
 }
 
@@ -217,7 +229,7 @@ window.setInterval(cycleTrackRecommendations, 15000);
 
 function closeSearchBar() {
   searchField.value = ""
-  document.querySelector("#search-results").style.display = "none";
+  document.querySelector("#search-results-container").style.visibility = "hidden";
   document.querySelector(".search-back-btn").style.display = "none";
 }
 
@@ -228,5 +240,37 @@ function searchRecommendation() {
     console.log(recommendations)
     console.log(recomsIdx)
     document.getElementById("search-field").dispatchEvent(new Event('input'));
+  }
+}
+
+
+function showQROverlay() {
+  document.getElementById("qrcode-overlay").style.display = "block";
+}
+
+function hideQROverlay() {
+  document.getElementById("qrcode-overlay").style.display = "none";
+}
+
+QRCode = new QRCode(document.getElementById("qrcode"), window.location.href);
+document.getElementById("room-pin").innerHTML = pin;
+
+
+const skipTrackReq = new XMLHttpRequest();
+function skipTrack() {
+  skipTrackReq.open("POST", buildQueryString("/skip", {pin: pin}));
+  skipTrackReq.send();
+}
+
+skipTrackReq.onreadystatechange = function(){
+  if (this.readyState == 4) {
+    if (this.status == 204) {
+      alert("Skiped");
+    }
+    else {
+      alert("Something went wrong");
+      console.log(this.responseText);
+    }
+    document.getElementById("skip-btn").blur();
   }
 }
