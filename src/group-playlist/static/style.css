@@ -25,6 +25,32 @@ html, body {
   'opsz' 40
 }
 
+.message-flash {
+  position: fixed;
+  bottom: -50px;
+  z-index: 2;
+  background-color: lightgrey;
+  padding: 1em;
+  width: 60%;
+  border-radius: 10px;
+  transition: transform 0.4s;
+}
+
+.message-flash.activ {
+  transform: translateY(-80px);
+}
+
+#for-spotify-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spotify-logo {
+  width: 81px;
+  height: 24px;
+}
+
 .btn-no-style {
   background: none;
   border: none;
@@ -35,7 +61,7 @@ html, body {
 }
 
 .link {
-  color: #2454e3;
+  color: #6363f7;
 }
 
 .link:active, .link:hover {
@@ -67,6 +93,7 @@ header .app-title{
   color: white;
 }
 
+
 footer#credits {
   background: #4d4d4d;
   border-radius: 20px 20px 0 0;
@@ -77,6 +104,7 @@ footer#credits {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  box-shadow: 4px 5px 15px -2px rgba(0,0,0,0.76);
 }
 
 /* ---Very short screen (mobile keyboard)--- */
@@ -107,14 +135,16 @@ footer#credits {
   padding: 20px;
   border: 0px solid black;
   border-radius: 0px 0px 20px 20px;
+  box-shadow: 4px 5px 15px -2px rgba(0,0,0,0.76);
 
   background: #4d4d4d;
 }
 
 .header-nav {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   align-items: center;
+  justify-items: center;
   margin: 0 0 16px 0;
 }
 
@@ -182,6 +212,7 @@ footer#credits {
   align-items: center;
   padding: 10px;
   border-radius: 100px;
+  box-shadow: 4px 5px 15px -2px rgba(0,0,0,0.76);
 }
 
 #search-bar>* {
@@ -201,8 +232,8 @@ footer#credits {
   border-bottom: 2px solid white;
 }
 
-.search-back-btn {
-  display:none;
+#search-back-btn {
+  display: none;
 }
 
 img.track-image {
@@ -357,10 +388,17 @@ div#button-container {
   box-sizing: border-box;
   border-radius: 12px;
   height: 60px;
-  width: 300px;
+  width: 200px;
   margin: 5% 8%;
   padding: 0.4em;
   color: black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.host-button-container {
+  display: flex;
 }
 
 .visit-room-btn {

@@ -15,10 +15,11 @@ def create_app():
     app.config ["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 
-    from models import db
-    db.init_app(app)
+    import models
+    models.db.init_app(app)
     with app.app_context():
-        db.create_all()
+        models.db.create_all()
+        models.delete_old_rows()
 
     from views import views
     app.register_blueprint(views)

@@ -15,7 +15,12 @@
             </a>
             <span id="title">
                 <p id="app-name">Group playlist</p>
-                <p>for <a href="https://spotify.com">Spotify</a></p>
+                <span id="for-spotify-label">
+                    <p>for&nbsp;</p> 
+                    <a href="https://spotify.com">
+                        <img class="spotify-logo" src="{{ url_for('static', filename='Spotify_Logo_RGB_Green.png') }}" alt="Spotify">
+                    </a>
+                </span>
             </span>
             <button id="qr-btn" class="btn-no-style material-symbols-outlined" onclick="showQROverlay()">
                 person_add
@@ -31,11 +36,13 @@
                         <p class="track-label track-artists" id="current-track-artists"></p>
                     </span>
                 </span>
+                {% if user_can_skip %}
                 <span>
                     <button id="skip-btn" class="btn-no-style material-symbols-outlined" onclick="skipTrack()">
                         skip_next
                     </button>
                 </span>
+                {% endif %}
             </div>
             <progress id="track-progress"></progress>
             <span id="is-paused">Pausiert</span>
@@ -43,10 +50,10 @@
     </header>
     <main class="room-main">
         <div id="search-bar">
-            <button class="btn-no-style search-back-btn material-symbols-outlined" onclick="closeSearchBar()">
+            <button id="search-back-btn" class="btn-no-style material-symbols-outlined" onclick="closeSearchBar()">
                 close
             </button>
-            <input id="search-field" class="search-field" type="text" placeholder="Suche nach Songs...">
+            <input id="search-field" class="search-field" type="text" placeholder="Du kannst hier songs zur Warteschlange hinzufügen...">
             <button class="btn-no-style search-btn material-symbols-outlined" onclick="searchRecommendation()">
                 search
             </button>
@@ -63,11 +70,12 @@
             <p>Anscheinend ist Spotify grade nicht aktiv :(<br/>Öffne die Spotify App und starte einen Song</p>
         </div>
     </main>
+    <div class="message-flash">
+    </div>
     <footer id="credits">
         <p>Ein Programm von Andreas Hars</p>
         <p>Besuche mein <a class="link" href="https://github.com/Andi1005" target="_blank">GitHub</a></p>
     </footer>
-
     <div class="overlay" id="qrcode-overlay">
         <button id="qr-back-btn" class="room-header" onclick="hideQROverlay()">
             <span class="material-symbols-outlined">
@@ -84,7 +92,6 @@
             </p>
             <h2 id="room-pin"></h2> 
         </div>
-        
     </div>
     
     <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>

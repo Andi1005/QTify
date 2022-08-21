@@ -2,7 +2,8 @@ import json, functools, time
 
 import requests
 from flask import Blueprint
-from flask import request, session, redirect, render_template, url_for, flash, g
+from flask import request, session, redirect, render_template, url_for, g, abort
+from werkzeug.exceptions import HTTPException
 
 from models import db, Rooms
 import auth
@@ -15,20 +16,18 @@ views = Blueprint("views", __name__)
 def pin_required(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
-        pin = request.args.get("pin")
+        pin = request.args.get("pin", kwargs.get("pin"))
         if pin is None:
-
-            if "host_of" in session:
-                pin = session["host_of"]
-                if pin is None:   
-                    return "Bad Request - Invalid or no pin", 400
+            abort(401)
+            return "Bad Request - Invalid or no pin", 400
 
         room = db.session.query(Rooms).filter_by(pin=pin).first()
         if room is None:
-            return "Bad Request - Room doesn't exists", 400
+            abort(401)
+            return "Bad Request - Room doesn't exists", 401
 
         if room.expires_at < time.time():
-            return "Unauthorized - Room is expired", 401
+            return "Unauthorized - Room is expired", 410
 
         g.pin = pin
         g.room = room
@@ -37,7 +36,7 @@ def pin_required(func):
     return wrapper
 
 
-@views.route("/")
+@views.get("/")
 def index():
     return render_template("index.html")
 
@@ -55,7 +54,7 @@ def create_room():
     return render_template("create.html")
 
 
-@views.route("/redirect") 
+@views.get("/redirect") 
 def redirect_page():
     code = request.args.get("code")
     if code is None:
@@ -71,12 +70,13 @@ def redirect_page():
         room_lifespan = int(session.pop("room_lifespan"))
         users_can_skip = bool(session.pop("users_can_skip"))
     except:
-        return "Bad Request - Invalid room settings", 400
+        abort(400)
 
     room = Rooms(
         **spotify_auth_data, 
         pin_length=pin_length,
-        lifespan=room_lifespan
+        lifespan=room_lifespan,
+        skip=users_can_skip
     )
     db.session.add(room)
     db.session.commit()
@@ -96,9 +96,7 @@ def host():
         pin = session["host_of"]
         found_room = Rooms.query.filter_by(pin=pin)
         if not found_room:
-            return "Gone - Room isn't in the database", 410
-        elif False:
-            pass # Handle an expired room
+            abort(410)
 
         return render_template("host.html", pin=pin)
 
@@ -127,41 +125,52 @@ def join():
 @views.route("/room/<int:pin>", methods=("GET", "POST"))
 @pin_required
 def room(pin):
+    print(pin)
     if request.method == "POST":
-        track_uri = request.args.get("track_uri") # TODO: validate track_uri
-        api.add_to_queue(track_uri)
+        track_uri = request.args.get("track_uri")
+        if type(track_uri) is str:
+            api.add_to_queue(track_uri)
+        else:
+            abort(400)
+    return render_template("room.html", user_can_skip=g.room.skip)
 
-    return render_template("room.html")
 
-
-@views.route("/current-track")
+@views.get("/current-track")
 @pin_required
 def current_track(): 
     response = api.get_current_track()
     return response
 
 
-@views.route("/search")
+@views.get("/search")
 @pin_required
 def search():
     q = request.args.get("q")
     if not q:
-        return "Missing search string", 400
+        abort(400)
 
     return api.search(q)
 
 
-@views.route("/queue", methods=("POST",))
+@views.post("/queue")
 @pin_required
 def add_to_queue():
     track_uri = request.args.get("uri")
     if not track_uri:
-        return "Missing track uri", 400
+        abort(400)
 
     return api.add_to_queue(track_uri)
 
 
-@views.route("/skip", methods=("POST",))
+@views.post("/skip")
 @pin_required
 def skip():
-    return api.skip_track()
+    if g.room.skip:
+        return api.skip_track()
+    else: 
+        abort(403)
+
+
+@views.errorhandler(HTTPException)
+def error_page(error):
+    return error

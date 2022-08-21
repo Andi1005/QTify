@@ -1,7 +1,7 @@
 const pin = window.location.pathname.match(/[0-9]+/);
-const url = `${window.location.protocol}//${window.location.hostname}:${window.location.port}`
+const url = `${window.location.protocol}//${window.location.hostname}:${window.location.port}`;
 
-const updateInterval = 60000
+const updateInterval = 6000
 
 let spotifyIsActitiv;
 
@@ -11,6 +11,18 @@ let recomsIdx = 0;
 let trackEndsIn;
 let isPlaying = false;
 let progress = 0;
+
+let current_track;
+
+
+function flashMessage(msg) {
+  messageBox = document.getElementsByClassName("message-flash")[0];
+  messageBox.innerHTML = msg;
+  messageBox.classList.add("activ");
+  setTimeout(function() {
+    messageBox.classList.remove("activ")
+  }, 3000)
+}
 
 
 function buildQueryString(endpoint, query) {
@@ -39,8 +51,11 @@ trackInfoReq.onreadystatechange = function(){
       trackInfo = JSON.parse(trackInfoReq.responseText);
       updateTrackInfo(trackInfo);
 
-      recommendations = trackInfo.similar_tracks;
-      recomsIdx = 0;
+      if (trackInfo.name != current_track){
+        recommendations = trackInfo.similar_tracks;
+        recomsIdx = 0;
+      }
+      current_track = trackInfo.name
     }
     
     else if ( this.status == 204) { //Spotify isn't activ
@@ -98,21 +113,44 @@ window.setInterval(function(){
 }, progressUpdateInterval);
 
 
+const skipTrackReq = new XMLHttpRequest();
+function skipTrack() {
+  skipTrackReq.open("POST", buildQueryString("/skip", {pin: pin}));
+  skipTrackReq.send();
+}
+
+skipTrackReq.onreadystatechange = function(){
+  if (this.readyState == 4) {
+    if (this.status == 204) {
+      flashMessage("Skiped");
+      requestTrackInfo()
+    }
+    else {
+      flashMessage("Something went wrong");
+      console.log(this.responseText);
+    }
+    document.getElementById("skip-btn").blur();
+  }
+}
+
 //Send a request on search bar input to /search endpoint
 const searchRequest = new XMLHttpRequest();
 document.getElementById("search-field").addEventListener('input', function (evt) {
-  const queryString = buildQueryString("/search", {q: this.value, pin: pin});
-  searchRequest.open("GET", queryString);
-  searchRequest.send(); 
+  if (this.value == "") {
+    closeSearchBar()
+  } else {
+    const queryString = buildQueryString("/search", {q: this.value, pin: pin});
+    searchRequest.open("GET", queryString);
+    searchRequest.send(); 
+  }
 });
-
 
 //Recive request response
 searchRequest.onreadystatechange = function(){
   if (this.readyState == 4) {
     if (this.status == 200) {
       document.querySelector("#search-results-container").style.visibility = "visible";
-      document.querySelector(".search-back-btn").style.display = "block";
+      document.querySelector("#search-back-btn").style.display = "block";
 
       const tracks = JSON.parse(searchRequest.responseText).tracks;
 
@@ -179,7 +217,7 @@ function generateOnClick(track_uri) {
   addToQueueReq.onreadystatechange = function(){
     if (this.readyState == 4) {
       if (this.status == 204) {
-        alert("Added to playback queue")
+        flashMessage("Added to playback queue")
       }
     }
   }
@@ -190,28 +228,46 @@ function generateOnClick(track_uri) {
 
 const searchField = document.querySelector("#search-field");
 const defaultPlaceholder = searchField.placeholder;
+let current_recom;
 let charIdx = searchField.placeholder.length - 1;
 const speed = 60;
+const cycleSpeed = 15000
+const recomPhrases = [
+  "Versuchs mal mit",
+  "Wie währe es mit",
+  "Magst du",
+  "Krasser Banger:",
+  "Was hält`s du von",
+  "Suche doch mal nach",
+]
+
 
 function cycleTrackRecommendations() {
-  if (searchField.value == "") {
-    removePlaceholder("Versuch's mal mit \"" + recommendations[recomsIdx] + "\"...");   
+  if (searchField.value == "" && recommendations != null) {
+    removePlaceholder();  
+  }
+  else {
+    setTimeout(cycleTrackRecommendations, cycleSpeed);
   }
 }
 
 
-function removePlaceholder(newPlaceholder) {
+function removePlaceholder() {
   if (charIdx >= 0) {
     searchField.placeholder = searchField.placeholder.slice(0, charIdx);
     charIdx--;
-    setTimeout(function (){removePlaceholder(newPlaceholder)}, speed);
+    setTimeout(function (){removePlaceholder()}, speed);
   }
   else {
-    addPlaceholder(newPlaceholder)
-    recomsIdx ++;
-    if (recomsIdx >= recommendations.length) {
-      recomsIdx = 0;
-    } 
+
+    if (recommendations.length === 0) {
+      newPlaceholder = defaultPlaceholder
+    } else {
+      recomPhrase = recomPhrases[Math.floor(Math.random() * recomPhrases.length)]
+      current_recom = recommendations[recomsIdx]
+      newPlaceholder = recomPhrase + " \"" + current_recom + "\" ?"
+    }
+    addPlaceholder(newPlaceholder);
   }
 }
 
@@ -222,55 +278,52 @@ function addPlaceholder(newPlaceholder) {
     charIdx++;
     setTimeout(function (){addPlaceholder(newPlaceholder)}, speed);
   }
+  else {
+    recomsIdx ++;
+    if (recomsIdx >= recommendations.length) {
+      recomsIdx = 0;
+    }
+    setTimeout(cycleTrackRecommendations, cycleSpeed);
+  }
 }
-
-window.setInterval(cycleTrackRecommendations, 15000);
 
 
 function closeSearchBar() {
   searchField.value = ""
   document.querySelector("#search-results-container").style.visibility = "hidden";
-  document.querySelector(".search-back-btn").style.display = "none";
+  document.querySelector("#search-back-btn").style.display = "none";
 }
 
 
 function searchRecommendation() {
   if (searchField.value == "" && searchField.placeholder != defaultPlaceholder) {
-    searchField.value = recommendations[recomsIdx]
-    console.log(recommendations)
-    console.log(recomsIdx)
+    searchField.value = current_recom
     document.getElementById("search-field").dispatchEvent(new Event('input'));
   }
 }
 
 
-function showQROverlay() {
-  document.getElementById("qrcode-overlay").style.display = "block";
+const searchResultsNumber = 10
+for (let i = 0; i<searchResultsNumber; i++){
+    buildSearchResultElem()
 }
+
+
+setTimeout(cycleTrackRecommendations, cycleSpeed);
+
+
+function showQROverlay(pin) {
+  qrOverlay = document.getElementById("qrcode-overlay")
+  if (!qrOverlay.querySelector("#qrcode").innerHTML) {
+      generateQRCode(pin)
+  }
+  qrOverlay.style.display = "block";
+}
+
 
 function hideQROverlay() {
   document.getElementById("qrcode-overlay").style.display = "none";
 }
 
-QRCode = new QRCode(document.getElementById("qrcode"), window.location.href);
+QRCode = new QRCode(document.getElementById("qrcode"), url + "/room/" + pin);
 document.getElementById("room-pin").innerHTML = pin;
-
-
-const skipTrackReq = new XMLHttpRequest();
-function skipTrack() {
-  skipTrackReq.open("POST", buildQueryString("/skip", {pin: pin}));
-  skipTrackReq.send();
-}
-
-skipTrackReq.onreadystatechange = function(){
-  if (this.readyState == 4) {
-    if (this.status == 204) {
-      alert("Skiped");
-    }
-    else {
-      alert("Something went wrong");
-      console.log(this.responseText);
-    }
-    document.getElementById("skip-btn").blur();
-  }
-}

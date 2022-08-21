@@ -77,11 +77,6 @@ def get_current_track():
         artists_names = [artist["name"] for artist in artists]
         artists_names = ", ".join(artists_names)
 
-        seed = {
-            "seed_artists": [artist["id"] for artist in artists[:min(4, len(artists))]],
-            "seed_tracks": [response_dict["item"]["id"]],
-        }
-
         track_info = {
             "is_playing": response_dict["is_playing"],
             "progress_ms": response_dict["progress_ms"],
@@ -91,7 +86,7 @@ def get_current_track():
             "image": response_dict["item"]["album"]["images"][0]["url"],
             "artists": artists_names,
 
-            "similar_tracks": get_recommendations(**seed)
+            "similar_tracks": get_recommendations()
         }
 
         return track_info
@@ -125,15 +120,16 @@ def get_track_info(id):
 
 
 @auth.check_token
-def get_recommendations(seed_artists=[], seed_genres=[], seed_tracks=[]):
-    if len(seed_artists + seed_genres + seed_tracks) > 5:
-        return
+def get_recommendations():
 
     endpoint = SPOTIFY_URL + "/recommendations?"
+    seed_tracks = Tracks.query.filter_by(room=g.room).order_by(Tracks.order.desc())[-5:]
+    seed_tracks = [track.id for track in seed_tracks]
     query = {
-        "seed_artists": ",".join(seed_artists),
-        #"seed_genres": ",".join(seed_genres),
         "seed_tracks": ",".join(seed_tracks),
+        "min_popularity": 70,
+        "min_danceability": 0.3,
+        "min_energiy": 0.4,
         "limit": 20,
         "market": MARKET,
     }
@@ -142,7 +138,21 @@ def get_recommendations(seed_artists=[], seed_genres=[], seed_tracks=[]):
 
     if response.status_code == 200:
         response_dict = response.json()
-        return [track["name"] for track in response_dict["tracks"]]
+        recommendations = []
+        for track in response_dict["tracks"]:
+
+            name = track["name"]
+            idx = name.rfind("(")
+            recommendation = name
+            if not idx == -1:
+                if "feat." in name[idx:] or "with" in name[idx:]:   
+                    recommendation = name[:idx]
+                
+            while recommendation[-1] == " ":
+                recommendation = recommendation[:len(recommendation)-1]
+            recommendations.append(recommendation)
+
+        return recommendations
 
 
 @auth.check_token
