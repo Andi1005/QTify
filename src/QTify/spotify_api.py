@@ -3,8 +3,8 @@ from urllib.parse import urlencode
 import requests
 from flask import g
 
-import auth
-from models import db, Tracks
+from . import auth
+from .models import db, Tracks
 
 
 SPOTIFY_URL = "https://api.spotify.com/v1"

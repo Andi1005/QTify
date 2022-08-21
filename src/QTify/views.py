@@ -5,9 +5,9 @@ from flask import Blueprint
 from flask import request, session, redirect, render_template, url_for, g, abort
 from werkzeug.exceptions import HTTPException
 
-from models import db, Rooms
-import auth
-import spotify_api as api
+from .models import db, Rooms
+from . import auth
+from . import spotify_api as api
 
 
 views = Blueprint("views", __name__)

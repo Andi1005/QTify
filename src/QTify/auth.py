@@ -4,8 +4,8 @@ from urllib.parse import urlencode
 from flask import url_for, g
 import requests
 
-from secret import CLIENT_ID, CLIENT_SECRET
-from models import db
+from .config import CLIENT_ID, CLIENT_SECRET
+from .models import db
 
 SPOTIFY_URL = "https://accounts.spotify.com"
 SERVER_URL = "http://localhost:5000"

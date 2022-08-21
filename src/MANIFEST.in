@@ -1,0 +1,3 @@
+graft QTify/static
+graft QTify/templates
+global-exclude *.pyc
