@@ -1,4 +1,5 @@
 import os
+from socket import gethostname
 
 from flask import Flask
 
@@ -31,7 +32,8 @@ def create_app():
 
     return app
 
+app = create_app()
 
 if __name__ == "__main__":
-    app = create_app()
-    app.run(debug=True)
+    if 'liveconsole' not in gethostname():
+        app.run(debug=True)

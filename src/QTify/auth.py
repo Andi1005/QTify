@@ -4,11 +4,10 @@ from urllib.parse import urlencode
 from flask import url_for, g
 import requests
 
-from .config import CLIENT_ID, CLIENT_SECRET
+from .config import CLIENT_ID, CLIENT_SECRET, SERVER_URL
 from .models import db
 
 SPOTIFY_URL = "https://accounts.spotify.com"
-SERVER_URL = "http://localhost:5000"
 SCOPES = [
     "user-read-currently-playing",
     "user-modify-playback-state"

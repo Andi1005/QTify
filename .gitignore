@@ -1,6 +1,6 @@
 # Project specific
-secret.py
 *.sqlite3
+config.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
