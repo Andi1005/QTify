@@ -18,16 +18,16 @@ def pin_required(func):
     def wrapper(*args, **kwargs):
         pin = request.args.get("pin", kwargs.get("pin"))
         if pin is None:
-            abort(401)
-            return "Bad Request - Invalid or no pin", 400
+            abort(400) # No pin in request
 
         room = db.session.query(Rooms).filter_by(pin=pin).first()
         if room is None:
-            abort(401)
-            return "Bad Request - Room doesn't exists", 401
+            abort(404) # Room not found
 
         if room.expires_at < time.time():
-            return "Unauthorized - Room is expired", 410
+            Rooms.query.filter_by(pin=pin).delete()
+            db.session.commit()
+            abort(410) # Room is expired
 
         g.pin = pin
         g.room = room
@@ -59,18 +59,18 @@ def redirect_page():
     code = request.args.get("code")
     if code is None:
         print(request.args.get("error"))
-        return "Forbidden - Inappropriate answer from accounts.spotify.com", 403
+        abort(403) # Inappropriate answer from accounts.spotify.com
 
     spotify_auth_data = auth.request_access_token(code)
     if not spotify_auth_data:
-        return "Forbidden - Inappropriate answer from accounts.spotify.com", 403
+        abort(403) # Inappropriate answer from accounts.spotify.com
 
     try:
         pin_length = int(session.pop("pin_length"))
         room_lifespan = int(session.pop("room_lifespan"))
         users_can_skip = bool(session.pop("users_can_skip"))
     except:
-        abort(400)
+        abort(400) # Needed inforations are not in session
 
     room = Rooms(
         **spotify_auth_data, 
@@ -89,14 +89,15 @@ def redirect_page():
 @views.route("/host", methods=("GET", "POST"))
 def host():
     if request.method == "GET":
-        if not "host_of" in session:
-            # No session found
+        # Create a new room if you are not the owner of one
+        if not "host_of" in session: 
             return redirect(url_for("views.create_room"))
             
         pin = session["host_of"]
         found_room = Rooms.query.filter_by(pin=pin)
         if not found_room:
-            abort(410)
+            session.pop("host_of")
+            abort(404)
 
         return render_template("host.html", pin=pin)
 
@@ -173,4 +174,8 @@ def skip():
 
 @views.errorhandler(HTTPException)
 def error_page(error):
-    return error
+    return render_template(
+        "error.html", 
+        status_code=error.get_response().status_code, 
+        description=error.description, 
+    )

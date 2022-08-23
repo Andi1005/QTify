@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    <title>{{ status_code }}</title>
+</head>
+<body>
+    <main class="error-content">
+        <h1>Oops!</h1>
+        <h2>Error {{ status_code }}</h2>
+        <p>{{ description }}</p>
+        <p>Versuche doch eine der Optionen unten:</p>
+        <div id="error-links-container">
+            <a class="link-no-style button" href="{{ url_for('views.index') }}">Home</a>
+            <a class="link-no-style button" onclick="window.location.href = document.referrer" href="{{ last_page }}">Letze Seite</a>
+            <a class="link-no-style button">Hilfe</a>
+        </div>
+    </main>
+</body>
+</html>
