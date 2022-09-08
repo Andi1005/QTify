@@ -221,6 +221,7 @@ footer#credits {
   box-sizing: border-box;
   width: 100%;
   height: 6vmin;
+  min-height: 24px;
   background-color: #4d4d4d;
   display: none; /*When activ set to flex*/
   align-items: center;
@@ -371,6 +372,7 @@ div#button-container {
 /* ---Specific to join.html--- */
 .pin-form {
   width: 100%;
+  margin: 15px;
 }
 
 

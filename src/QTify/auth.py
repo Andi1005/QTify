@@ -28,7 +28,7 @@ def request_user_authorization():
         "client_id": CLIENT_ID,
         "scope": ", ".join(SCOPES),
         "redirect_uri": SERVER_URL + url_for("views.redirect_page"),
-        "state": "false"
+        "show_dialog": True
     }
 
     query_string = urlencode(query)
