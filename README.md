@@ -1,14 +1,14 @@
 # QTify
 A web app where you can add songs to your Spotify queue.
-Anybody with a code can access it, so you dont have to pass your phone around.
+Anybody with a code can access it, so you don't have to pass your phone around.
 
 The name QTify is a mix of "Queue" and "Spotify" :)
 
 # How to access QTify
-The website is hosted on [Pythonanywhere.com](https://eu.pythonanywhere.com) and can be access at [qtify.eu.pythonanywhere.com](http://qtify.eu.pythonanywhere.com/)
+The website is hosted on [Pythonanywhere.com](https://eu.pythonanywhere.com) and can be accessed at [qtify.eu.pythonanywhere.com](http://qtify.eu.pythonanywhere.com/)
 
 # Using QTify
-At the index page you can choose to either create a new room or to join an existing one:
+On the index page you can choose to either create a new room or to join an existing one:
 
 * If you **create** a new room, you are redirected to a page where you have to sing-in to Spotify.
 After that you are again redirected to the host page. 
@@ -22,10 +22,10 @@ You can get a pin from the host of the Room.
 The button to view the QR Code is at the top-left corner in the room page.
 
 
-Finally you are in the room page, the hart of the application. 
-You can view the current playing song and it's progress, 
+Finally, you are in the room page, the heart of the application. 
+You can view the current playing song and its progress, 
 search for songs to be added next and send them to the server by clicking on the song.
 
-There is no way of deleting or changing tracks in the queue once the server sends them to spotify :(
+There is no way of deleting or changing tracks in the queue once the server sends them to Spotify :(
 
 
