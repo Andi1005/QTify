@@ -8,10 +8,8 @@ from .config import CLIENT_ID, CLIENT_SECRET, SERVER_URL
 from .models import db
 
 SPOTIFY_URL = "https://accounts.spotify.com"
-SCOPES = [
-    "user-read-currently-playing",
-    "user-modify-playback-state"
-]
+SCOPES = ["user-read-currently-playing", "user-modify-playback-state"]
+
 
 def generate_client_auth():
     message = f"{CLIENT_ID}:{CLIENT_SECRET}"
@@ -21,6 +19,7 @@ def generate_client_auth():
 
     return base64_message
 
+
 def request_user_authorization():
     endpoint = "/authorize?"
     query = {
@@ -28,7 +27,7 @@ def request_user_authorization():
         "client_id": CLIENT_ID,
         "scope": ", ".join(SCOPES),
         "redirect_uri": SERVER_URL + url_for("views.redirect_page"),
-        "show_dialog": True
+        "show_dialog": True,
     }
 
     query_string = urlencode(query)
@@ -36,34 +35,38 @@ def request_user_authorization():
 
     return redirect_url
 
+
 def request_access_token(code):
     endpoint = "/api/token"
     headers = {
         "Authorization": "Basic " + generate_client_auth(),
-        "Content-Type": "application/x-www-form-urlencoded"
+        "Content-Type": "application/x-www-form-urlencoded",
     }
     data = {
         "grant_type": "authorization_code",
         "code": code,
-        "redirect_uri": SERVER_URL + url_for("views.redirect_page")
+        "redirect_uri": SERVER_URL + url_for("views.redirect_page"),
     }
 
-    response = requests.post(SPOTIFY_URL + endpoint, headers=headers, data=data) # -> access_token, token_type, espires_in, refresh_token, scope
+    response = requests.post(
+        SPOTIFY_URL + endpoint, headers=headers, data=data
+    )  # -> access_token, token_type, espires_in, refresh_token, scope
     response_dict = response.json()
 
     response_data = {
         "access_token": response_dict["access_token"],
         "token_expires_at": time.time() + response_dict["expires_in"],
-        "refresh_token": response_dict["refresh_token"]
+        "refresh_token": response_dict["refresh_token"],
     }
-    
+
     return response_data
+
 
 def refresh_access_token(refresh_token):
     endpoint = "/api/token"
     headers = {
         "Authorization": "Basic " + generate_client_auth(),
-        "Content-Type": "application/x-www-form-urlencoded"
+        "Content-Type": "application/x-www-form-urlencoded",
     }
     data = {
         "grant_type": "refresh_token",
@@ -73,13 +76,11 @@ def refresh_access_token(refresh_token):
     response = requests.post(SPOTIFY_URL + endpoint, headers=headers, data=data)
     response_dict = response.json()
 
-    print(type(response_dict["expires_in"])) # Debug
-
     response_data = {
         "access_token": response_dict["access_token"],
         "token_expires_at": time.time() + response_dict["expires_in"],
     }
-    
+
     return response_data
 
 
@@ -93,4 +94,5 @@ def check_token(func):
             db.session.commit()
 
         return func(*args, **kwargs)
+
     return wrapper
