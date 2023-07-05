@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 </head>
 <body class="room-content">
-    <header class="room-header">
+    <header class="room-header foreground">
         <nav class="header-nav">
             <a href="{{ url_for('views.index') }}"id="home-btn" class="link-no-style material-symbols-outlined">
                 home
@@ -26,15 +26,15 @@
                 person_add
             </button>
         </nav>
-        <div id="current-track-container">
-            <p>Aktueller Song:</p>
-            <div id="current-track-horizontal-container">
-                <span class="current-track track-preview">
-                    <img class="track-image" id="current-track-image">
-                    <span>
-                        <p class="track-label track-name" id="current-track-name"></p>
-                        <p class="track-label track-artists" id="current-track-artists"></p>
-                    </span>
+    </header>
+    <main class="room-main">
+        <div id="current-track" class="main-tab">
+            <p class="headline foreground">Aktueller Song:</p>
+            <img class="track-image" id="current-track-image">
+            <div id="current-track-labels">      
+                <span>
+                    <p class="track-label track-name" id="current-track-name"></p>
+                    <p class="track-label track-artists" id="current-track-artists"></p>
                 </span>
                 {% if user_can_skip %}
                 <span>
@@ -47,41 +47,62 @@
             <progress id="track-progress"></progress>
             <span id="is-paused">Pausiert</span>
         </div>
-    </header>
-    <main class="room-main">
-        <div id="search-bar">
-            <button id="search-back-btn" class="btn-no-style material-symbols-outlined" onclick="closeSearchBar()">
-                close
-            </button>
-            <input id="search-field" class="search-field" type="text" placeholder="Du kannst hier songs zur Warteschlange hinzufügen...">
-            <button id="search-btn" class="btn-no-style material-symbols-outlined" onclick="searchRecommendation()">
-                search
-            </button>
-        </div>
-        <div id="search-results-container">
-            <div id="search-results">
-                <!-- Search result are generated here from room.js --> 
+        <div id="search" class="main-tab">
+            <div id="search-bar">
+                <button id="search-back-btn" class="btn-no-style material-symbols-outlined" onclick="closeSearchBar()">
+                    close
+                </button>
+                <input id="search-field" class="search-field" type="text" placeholder="Du kannst hier songs zur Warteschlange hinzufügen...">
+                <button id="search-btn" class="btn-no-style material-symbols-outlined" onclick="searchRecommendation()">
+                    search
+                </button>
             </div>
-            <button id="scroll-search-results" class="btn-no-style material-symbols-outlined" onclick="scrollButtonClick()">
-                expand_more
-            </button>
+            <div id="search-results-container">
+                <div id="search-results">
+                    <!-- Search result are generated here from room.js --> 
+                </div>
+                <button id="scroll-search-results" class="btn-no-style material-symbols-outlined" onclick="scrollButtonClick()">
+                    expand_more
+                </button>
+            </div>
         </div>
-        <div id="not-activ-error">
+        <div id="queue" class="main-tab">
+            <p class="headline">Als nächstes kommt:</p>
+            <p class="missing-content" id="no-queue">Du hast noch keinen Song<br/>zur Warteschlange hinzugefügt.</p>
+            <div id="queue-view">
+                <!-- Queue entries are generated here from room.js -->
+
+            </div>
+        </div>
+        <div id="not-activ-error" class="missing-content">
+            <span class="big-symbol material-symbols-outlined">music_off</span>
             <p>Anscheinend ist Spotify grade nicht aktiv :(<br/>Öffne die Spotify App und starte einen Song</p>
         </div>
     </main>
-    <div class="message-flash">
-    </div>
-    <footer id="credits">
-        <p>Ein Programm von Andreas Hars</p>
-        <p>Besuche mein <a class="link" href="https://github.com/Andi1005" target="_blank">GitHub</a></p>
+    <footer id="menu" class="tab-button-container foreground">
+        <button class="main-tab-button material-symbols-outlined" onclick="openTab('current-track', 'main-tab')">music_note</button>
+        <button class="main-tab-button material-symbols-outlined" onclick="openTab('search', 'main-tab')">search</button>
+        <button class="main-tab-button material-symbols-outlined" onclick="openTab('queue', 'main-tab')">queue_music</button>
     </footer>
+    <div class="message-flash">
+        <!-- Queue entries are generated here from room.js --> 
+    </div>
+    <div id="current-track-popup">
+        <p>Neuer Song:</p>
+        <span class="track-preview">
+            <img class="track-image">
+            <span>
+                <p class="track-label track-name"></p>
+                <p class="track-label track-artists"></p>
+            </span>
+        </span>
+    </div>
     <div class="overlay" id="qrcode-overlay">
         <button id="qr-back-btn" class="room-header" onclick="hideQROverlay()">
             <span class="material-symbols-outlined">
                 arrow_back
             </span>
-             Zurück
+            Zurück
         </button>
         <div class="qrcode-overlay-main">
             <h1>QTify</h1>

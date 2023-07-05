@@ -5,12 +5,17 @@
     <h1 class="app-title"><a class="app-title" href="{{ url_for('views.index') }}">QTify</a></h1>
 </header>
 
-<mian>
+<main>
     <div id="button-container">
         <a class="join-btn" href="{{ url_for('views.join') }}">Raum betreten</a>
-        <a class="host-btn" href="{{ url_for('views.host') }}">Raum erstellen</a>  
+        {% if is_host %}
+        <a class="host-btn" href="{{ url_for('views.host') }}">Dein Raum Beitreiten</a>
+        <a class="sign-out-btn" href="{{ url_for('views.sign_out') }}" >Oder abmelden</a>
+        {% else %}
+        <a class="host-btn" href="{{ url_for('views.host') }}">Raum erstellen</a>
+        {% endif %}
     </div>
-</mian>
+</main>
 
 <footer>
     <p>A programm made by Andreas Hars</p>

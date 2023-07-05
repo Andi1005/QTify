@@ -1,7 +1,7 @@
 const pin = window.location.pathname.match(/[0-9]+/);
 const url = `${window.location.protocol}//${window.location.hostname}:${window.location.port}`;
 
-const updateInterval = 6000
+const updateInterval = 10000
 
 let spotifyIsActitiv;
 
@@ -14,6 +14,10 @@ let progress = 0;
 
 let current_track;
 
+function buildQueryString(endpoint, query) {
+  const params = new URLSearchParams(query);
+  return url + endpoint + "?" + params.toString();
+}
 
 function flashMessage(msg) {
   messageBox = document.getElementsByClassName("message-flash")[0];
@@ -24,32 +28,27 @@ function flashMessage(msg) {
   }, 3000)
 }
 
-
-function buildQueryString(endpoint, query) {
-  const params = new URLSearchParams(query);
-  return url + endpoint + "?" + params.toString();
-}
-
-
+// ---- Request current-track ----
 const trackInfoReq = new XMLHttpRequest();
+
+//send request
 function requestTrackInfo() {
   trackInfoReq.open("GET", buildQueryString("/current-track", {pin: pin}));
   trackInfoReq.send();
 }
 
-
 //recive response
 trackInfoReq.onreadystatechange = function(){
   if (this.readyState == 4) {
     if (this.status == 200) {
-      spotifyIsActitiv = true;
-      document.querySelector("#current-track-container").style.display = "block";
-      document.querySelector("#search-bar").style.display = "flex";
-      document.querySelector("#search-results-container").style.display = "block";
-      document.querySelector("#not-activ-error").style.display = "none";
-
-      trackInfo = JSON.parse(trackInfoReq.responseText);
+      if (!spotifyIsActitiv) {
+        onSpotifyActiv()
+      }
+      
+      let trackInfo = JSON.parse(trackInfoReq.responseText);
       updateTrackInfo(trackInfo);
+
+      updateQueueView(trackInfo.queue);
 
       if (trackInfo.name != current_track){
         recommendations = trackInfo.similar_tracks;
@@ -58,23 +57,39 @@ trackInfoReq.onreadystatechange = function(){
       current_track = trackInfo.name
     }
     
-    else if ( this.status == 204) { //Spotify isn't activ
-      spotifyIsActitiv = false;
-      document.querySelector("#current-track-container").style.display = "none";
-      document.querySelector("#search-bar").style.display = "none";
-      document.querySelector("#search-results-container").style.display = "none";
-      document.querySelector("#not-activ-error").style.display = "block";
+    else if (this.status == 204 && spotifyIsActitiv) { //Spotify isn't activ
+      onSpotifyInactiv()
     }
   }
 }
 
-
-requestTrackInfo(); //Call once at start
+requestTrackInfo();
 window.setInterval(requestTrackInfo, updateInterval);
 
 
+function onSpotifyInactiv() {
+  spotifyIsActitiv = false;
+  document.querySelector("#current-track").style.display = "none";
+  document.querySelector("#search").style.display = "none";
+  document.querySelector("#queue").style.display = "none";
+  document.querySelector("#not-activ-error").style.display = "block";
+}
+
+function onSpotifyActiv() {
+  spotifyIsActitiv = true;
+  document.querySelector("#current-track").style.display = "block";
+  document.querySelector("#not-activ-error").style.display = "none";
+}
+
 function updateTrackInfo(trackInfo) {
   document.querySelector("#current-track-image").src = trackInfo.image;
+
+  if (!trackInfo.color === undefined){
+    c = trackInfo.color;
+    rgba = `rgba(${c[0]}, ${c[1]}, ${c[2]}, 0.5)`;
+    document.querySelector("#current-track-image").style.boxShadow = "0px 0px 400px 0px " + rgba;
+  }
+    
   document.querySelector("#current-track-name").innerHTML = trackInfo.name;
   document.querySelector("#current-track-artists").innerHTML = trackInfo.artists;
   document.querySelector("#track-progress").max = trackInfo.duration_ms/1000;
@@ -113,7 +128,40 @@ window.setInterval(function(){
 }, progressUpdateInterval);
 
 
+function updateQueueView(queue) {
+  queueView = document.getElementById("queue-view");
+  trackContainers = queueView.getElementsByClassName("track-preview");
+
+  if (queue.length == 0) {
+    document.getElementById("no-queue").style.display = "block";
+  } 
+  else {
+    document.getElementById("no-queue").style.display = "none";
+  }
+
+  while (trackContainers.length > 0) {
+    trackContainers[0].remove();
+  }
+
+  for (let j=0; j<queue.length; j++) {
+    track = queue[j];
+    queueView = document.querySelector("#queue-view");
+
+    newQueueNode = buildTrackContainer(track);
+
+    const dragIcon = document.createElement("span");
+    dragIcon.classList.add("material-symbols-outlined");
+    dragIcon.innerHTML = "menu"
+    newQueueNode.appendChild(dragIcon);
+
+    queueView.appendChild(newQueueNode); 
+  }
+}
+
+
+// ---- Skipping a track ----
 const skipTrackReq = new XMLHttpRequest();
+
 function skipTrack() {
   skipTrackReq.open("POST", buildQueryString("/skip", {pin: pin}));
   skipTrackReq.send();
@@ -127,14 +175,16 @@ skipTrackReq.onreadystatechange = function(){
     }
     else {
       flashMessage("Something went wrong");
-      console.log(this.responseText);
     }
     document.getElementById("skip-btn").blur();
   }
 }
 
-//Send a request on search bar input to /search endpoint
+
+// ---- Search ----
 const searchRequest = new XMLHttpRequest();
+
+// Send request on every input change of the search field.
 document.getElementById("search-field").addEventListener('input', function (evt) {
   if (this.value == "") {
     closeSearchBar()
@@ -164,14 +214,17 @@ searchRequest.onreadystatechange = function(){
 
         elem = searchResultElements[i];
         if (elem == null) {
-            elem = buildSearchResultElem();
+            elem = buildTrackContainer(track);
             searchResultContainer.appendChild(elem);
+        }
+        else {
+          elem.querySelector(".track-image").src = track.image;
+          elem.querySelector(".track-name").innerHTML = track.name;
+          elem.querySelector(".track-artists").innerHTML = track.artists;
+  
         }
   
         elem.onclick = generateOnClick(track.uri);
-        elem.querySelector(".track-image").src = track.image;
-        elem.querySelector(".track-name").innerHTML = track.name;
-        elem.querySelector(".track-artists").innerHTML = track.artists;
       } 
     }
     else {
@@ -181,30 +234,34 @@ searchRequest.onreadystatechange = function(){
 };
 
 
-function buildSearchResultElem() {
-  const newSearchResult = document.createElement("div");
-  newSearchResult.classList.add("track-preview");
-  newSearchResult.classList.add("search-result-track");
+function buildTrackContainer(track) {
+  const newTrackContainer = document.createElement("div");
+  newTrackContainer.classList.add("track-preview");
+  newTrackContainer.classList.add("search-result-track");
 
   const trackImage = document.createElement("img");
   trackImage.classList.add("track-image");
-  newSearchResult.appendChild(trackImage);
+  trackImage.src = track.image_url;
+  newTrackContainer.appendChild(trackImage);
 
   const container = document.createElement("span");
-  newSearchResult.appendChild(container);
+  newTrackContainer.appendChild(container);
 
   const trackName = document.createElement("p");
   trackName.classList.add("track-name");
+  trackName.innerHTML = track.name;
   container.appendChild(trackName);
 
   const trackArtists = document.createElement("p");
   trackArtists.classList.add("track-artists");
+  trackArtists.innerHTML = track.artist;
   container.appendChild(trackArtists);
 
-  return newSearchResult;
+  return newTrackContainer;
 }
 
 
+// Send a request to add the track to queue, if the button is pressed
 function generateOnClick(track_uri) {
   const addToQueueReq = new XMLHttpRequest();
 
@@ -226,6 +283,7 @@ function generateOnClick(track_uri) {
 }
 
 
+// ---- Dynamic search bar ----
 const searchField = document.querySelector("#search-field");
 const defaultPlaceholder = searchField.placeholder;
 let current_recom;
@@ -241,7 +299,6 @@ const recomPhrases = [
   "Suche doch mal nach",
 ]
 
-
 function cycleTrackRecommendations() {
   if (searchField.value == "" && recommendations != null) {
     removePlaceholder();  
@@ -251,6 +308,7 @@ function cycleTrackRecommendations() {
   }
 }
 
+setTimeout(cycleTrackRecommendations, cycleSpeed);
 
 function removePlaceholder() {
   if (charIdx >= 0) {
@@ -271,7 +329,6 @@ function removePlaceholder() {
   }
 }
 
-
 function addPlaceholder(newPlaceholder) {
   if (charIdx < newPlaceholder.length) {
     searchField.placeholder += newPlaceholder.charAt(charIdx);
@@ -287,7 +344,7 @@ function addPlaceholder(newPlaceholder) {
   }
 }
 
-
+// Clear the sehrch bar, if the X button is pressed
 function closeSearchBar() {
   searchField.value = ""
   document.querySelector("#search-results-container").style.visibility = "hidden";
@@ -295,6 +352,7 @@ function closeSearchBar() {
 }
 
 
+// Search for the current recomendation, if the search button is pressed while a recomendation is shown
 function searchRecommendation() {
   if (searchField.value == "" && searchField.placeholder != defaultPlaceholder) {
     searchField.value = current_recom
@@ -303,15 +361,22 @@ function searchRecommendation() {
 }
 
 
-const searchResultsNumber = 10
-for (let i = 0; i<searchResultsNumber; i++){
-    buildSearchResultElem()
+// ---- Change between tabs ----
+function openTab(newTab, container) {
+  if (spotifyIsActitiv) {
+    // Deaktivae all tabs
+    tabs = document.getElementsByClassName(container);
+    for (let i = 0; i<tabs.length; i++) {
+      tabs[i].style.display = "none";
+    }
+
+    // Only show the selected tab
+    document.getElementById(newTab).style.display = "block";
+  }
 }
 
 
-setTimeout(cycleTrackRecommendations, cycleSpeed);
-
-
+// ---- QR Code ----
 function showQROverlay(pin) {
   qrOverlay = document.getElementById("qrcode-overlay")
   if (!qrOverlay.querySelector("#qrcode").innerHTML) {

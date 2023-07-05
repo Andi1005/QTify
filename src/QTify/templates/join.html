@@ -2,15 +2,21 @@
 
 {% block content %}
 <header>
+    <button id="qr-back-btn" class="room-header" onclick="hideQROverlay()">
+        <span class="material-symbols-outlined">
+            arrow_back
+        </span>
+         Zurück
+    </button>
     <h1 class="app-title"><a class="app-title" href="{{ url_for('views.index') }}">QTify</a></h1>
 </header>
 
-<mian>
+<main>
     <form class="pin-form" action="#" method="POST">
         <input class="pin-textbox input" type="number" name="pin" placeholder="Raum Pin" required minlength="4" maxlength="4"><br/>
         <input class="pin-submit-btn input" type="submit" value="Join">
     </form>
-</mian>
+</main>
 
 <footer>
     <p>A programm made by Andreas Hars</p>

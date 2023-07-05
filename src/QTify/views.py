@@ -141,7 +141,8 @@ def room(pin):
         if type(track_uri) is str:
             api.add_to_queue(track_uri)
 
-            track = Tracks(room_pin=g.room.pin, **api.get_track_infos(track_uri))
+            id = api.uri_to_id(track_uri)
+            track = Tracks(room_pin=g.room.pin, **api.get_track_info(id))
             db.session.add(track)
             db.session.commit()
 
@@ -160,6 +161,7 @@ def current_track():
 
     track_in_queue = g.room.queue.filter_by(id=current_track["id"]).first()
     if track_in_queue:
+        print(track_in_queue.position)
         g.room.position_in_queue = track_in_queue.position
         db.session.commit()
 
@@ -171,7 +173,9 @@ def current_track():
 
     queue = [
         {"name": track.name, "artist": track.artist, "image_url": track.image_url}
-        for track in g.room.queue.order_by(Tracks.position)
+        for track in g.room.queue.order_by(Tracks.position)[
+            g.room.position_in_queue - 1 :
+        ]
     ]
     current_track.update({"queue": queue})
 
@@ -192,12 +196,13 @@ def search():
 @pin_required
 def queue():
     if request.method == "POST":
-        track_uri = request.args.get("track_uri")
+        track_uri = request.args.get("uri")
         print(track_uri)
         if type(track_uri) is str:
             api.add_to_queue(track_uri)
 
-            track = Tracks(room_pin=g.room.pin, **api.get_track_infos(track_uri))
+            id = api.uri_to_id(track_uri)
+            track = Tracks(room_pin=g.room.pin, **api.get_track_info(id))
             db.session.add(track)
             db.session.commit()
 

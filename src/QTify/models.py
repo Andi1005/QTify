@@ -21,6 +21,7 @@ class Rooms(db.Model):
     token_expires_at = db.Column(db.Integer, nullable=False)
     refresh_token = db.Column(db.String, nullable=False)
     queue = db.relationship("Tracks", backref="room", lazy="dynamic")
+    queue_length = db.Column(db.Integer, nullable=False)
     position_in_queue = db.Column(db.Integer, nullable=False, default=0)
     skip = db.Column(db.Boolean)
 
@@ -37,6 +38,7 @@ class Rooms(db.Model):
         self.token_expires_at = token_expires_at
         self.refresh_token = refresh_token
         self.position_in_queue = 0
+        self.queue_length = 0
 
         self.skip = skip
         self.pin = generate_pin(max(4, pin_length))
@@ -66,7 +68,7 @@ class Tracks(db.Model):
     room_pin = db.Column(db.Integer, db.ForeignKey("rooms.pin"), primary_key=True)
 
     # At wich position in this queue the song is
-    position = db.Column(db.Integer, autoincrement=True)
+    position = db.Column(db.Integer, autoincrement=True, nullable=False)
     time_added = db.Column(db.DateTime, default=datetime.datetime.utcnow())
 
     name = db.Column(db.String(128))
@@ -76,10 +78,17 @@ class Tracks(db.Model):
     color = db.Column(db.String(8))  # in hexadecimal
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super().__init__(**kwargs)
+        queue_length = Rooms.query.filter_by(pin=self.room_pin).first().queue_length
+        self.position = queue_length
+        Rooms.query.filter_by(pin=self.room_pin).update(
+            {"queue_length": queue_length + 1}
+        )
+
+        db.session.commit()
 
     def __repr__(self):
-        return f"<Tracks '{self.name}'>"
+        return f"<Tracks '{self.name}' at position {self.position}>"
 
 
 def generate_pin(length):
@@ -91,7 +100,9 @@ def generate_pin(length):
 
 
 def delete_old_rows():
-    deleted_rooms = Rooms.query.where(Rooms.expires_at < time.time()).delete()
-    Tracks.query.delete()
+    expired_rooms = Rooms.query.where(Rooms.expires_at < time.time())
+    for expired_room in expired_rooms:
+        Tracks.query.where(Tracks.room_pin == expired_room.pin).delete()
+    deleted_rooms = expired_rooms.delete()
     db.session.commit()
     print(f"Deleted {deleted_rooms} expired rooms.")
