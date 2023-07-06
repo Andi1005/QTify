@@ -1,26 +1,29 @@
-{% extends 'base.html' %}
-
-{% block content %}
-<header>
-    <button id="qr-back-btn" class="room-header" onclick="hideQROverlay()">
-        <span class="material-symbols-outlined">
-            arrow_back
-        </span>
-         Zurück
-    </button>
-    <h1 class="app-title"><a class="app-title" href="{{ url_for('views.index') }}">QTify</a></h1>
-</header>
-
-<main>
-    <form class="pin-form" action="#" method="POST">
-        <input class="pin-textbox input" type="number" name="pin" placeholder="Raum Pin" required minlength="4" maxlength="4"><br/>
-        <input class="pin-submit-btn input" type="submit" value="Join">
-    </form>
-</main>
-
-<footer>
-    <p>A programm made by Andreas Hars</p>
-    <p>Check out my <a class="link" href="https://github.com/Andi1005" target="_blank">GitHub</a></p>
-</footer>
-
-{% endblock %}
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QTify</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+</head>
+<body>
+    <div class="content">
+        <header>
+            <h1 class="app-title"><a class="app-title" href="{{ url_for('views.index') }}">QTify</a></h1>
+        </header>
+        
+        <main>
+            <form class="pin-form" action="#" method="POST">
+                <input class="pin-textbox input" type="number" name="pin" placeholder="Raum Pin" required minlength="4" maxlength="8"><br/>
+                <input class="pin-submit-btn input" type="submit" value="Join">
+            </form>
+        </main>
+        
+        <footer>
+            <p>A programm made by Andreas Hars</p>
+            <p>Check out my <a class="link" href="https://github.com/Andi1005" target="_blank">GitHub</a></p>
+        </footer>
+    </div>
+</body>
+</html>

@@ -149,11 +149,6 @@ function updateQueueView(queue) {
 
     newQueueNode = buildTrackContainer(track);
 
-    const dragIcon = document.createElement("span");
-    dragIcon.classList.add("material-symbols-outlined");
-    dragIcon.innerHTML = "menu"
-    newQueueNode.appendChild(dragIcon);
-
     queueView.appendChild(newQueueNode); 
   }
 }

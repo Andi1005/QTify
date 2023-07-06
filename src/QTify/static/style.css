@@ -25,6 +25,17 @@ html, body {
   'opsz' 40
 }
 
+/* Hide arrows from number input */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
 .message-flash {
   position: fixed;
   bottom: -50px;
@@ -289,6 +300,8 @@ img.track-image {
 .track-preview {
   display: flex;
   align-items: center;
+  overflow-x: hidden;
+  margin: 6px 0;
 }
 
 .search-result-track * {
@@ -409,7 +422,6 @@ div#button-container {
 
 /* ---Specific to join.html--- */
 .pin-form {
-  width: 100%;
   margin: 15px;
 }
 
@@ -468,36 +480,40 @@ div#button-container {
 .options {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 5px 8px;
+  gap: 8px 10px;
 }
 
 .options .options-label {
   color: white;
   grid-column: 1;
   justify-self: left;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
+}
+
+#pin-length.options-input, #room-lifespan.options-input {
+    background: #4d4d4d;
 }
 
 .options .options-input {
   grid-column: 2;
   justify-self: right;
   width: 80px;
-  height: 25px;
+  height: 30px;
   outline: none;
-  background: #4d4d4d;
+
   border: none;
   box-sizing: border-box;
   border-radius: 5px;
-  padding: 0.1em;
+  padding: 0.2em;
 }
 
 .checkbox-switch {
-  --width: 50px;
+  --width: 60px;
   --height: calc(var(--width) / 2);
   --border-radius: calc(var(--height) / 2);
   cursor: pointer;
   position: relative;
-  margin: auto;
+  margin-left: 
 }
 
 .checkbox-switch input {
@@ -510,7 +526,7 @@ div#button-container {
   left: 0;
   width: var(--width);
   height: var(--height);
-  background-color: #dddddd;
+  background-color: #4d4d4d;
   display: inline-block;
   border-radius: var(--border-radius);
   transition: background-color 0.2s;
@@ -529,7 +545,7 @@ div#button-container {
 }
 
 .checkbox-switch input:checked + .slider {
-  background-color: #009578;
+  background-color: #3fba22;
 }
 
 
