@@ -68,7 +68,7 @@ class Tracks(db.Model):
     room_pin = db.Column(db.Integer, db.ForeignKey("rooms.pin"), primary_key=True)
 
     # At wich position in this queue the song is
-    position = db.Column(db.Integer, autoincrement=True, nullable=False)
+    position = db.Column(db.Integer, primary_key=True)
     time_added = db.Column(db.DateTime, default=datetime.datetime.utcnow())
 
     name = db.Column(db.String(128))

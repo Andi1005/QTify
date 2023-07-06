@@ -159,7 +159,11 @@ def current_track():
     if type(current_track) is int:
         return "No Content - Spotify is closed", 204
 
-    track_in_queue = g.room.queue.filter_by(id=current_track["id"]).first()
+    track_in_queue = (
+        g.room.queue.filter_by(id=current_track["id"])
+        .order_by(Tracks.position.desc())
+        .first()
+    )
     if track_in_queue:
         print(track_in_queue.position)
         g.room.position_in_queue = track_in_queue.position
@@ -174,7 +178,7 @@ def current_track():
     queue = [
         {"name": track.name, "artist": track.artist, "image_url": track.image_url}
         for track in g.room.queue.order_by(Tracks.position)[
-            g.room.position_in_queue - 1 :
+            g.room.position_in_queue + 1 :
         ]
     ]
     current_track.update({"queue": queue})
@@ -192,24 +196,33 @@ def search():
     return api.search(q)
 
 
-@views.route("/queue", methods=("GET", "POST"))
+@views.route("/queue", methods=("GET", "POST", "PUT"))
 @pin_required
 def queue():
-    if request.method == "POST":
+    if request.method == "POST" or request.method == "PUT":
         track_uri = request.args.get("uri")
-        print(track_uri)
-        if type(track_uri) is str:
-            api.add_to_queue(track_uri)
+        track_id = api.uri_to_id(track_uri)
 
-            id = api.uri_to_id(track_uri)
-            track = Tracks(room_pin=g.room.pin, **api.get_track_info(id))
-            db.session.add(track)
-            db.session.commit()
-
-            return "Added to Playback queue.", 204
-
-        else:
+        if not type(track_uri) is str:
             abort(400)
+
+        already_in_queue = g.room.queue.filter_by(id=track_id).first()
+        if already_in_queue:
+            already_in_queue = (
+                g.room.queue.filter_by(id=track_id)
+                .order_by(Tracks.position.desc())
+                .first()
+            )
+            if already_in_queue.position > g.room.position_in_queue:
+                return "Already in queue", 304
+
+        api.add_to_queue(track_uri)
+
+        track = Tracks(room_pin=g.room.pin, **api.get_track_info(track_id))
+        db.session.add(track)
+        db.session.commit()
+
+        return "Added to Playback queue.", 204
 
     elif request.method == "GET":
         response = {"tracks": []}
