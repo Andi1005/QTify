@@ -165,7 +165,6 @@ def current_track():
         .first()
     )
     if track_in_queue:
-        print(track_in_queue.position)
         g.room.position_in_queue = track_in_queue.position
         db.session.commit()
 

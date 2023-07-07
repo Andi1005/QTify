@@ -161,8 +161,15 @@ def find_dominant_color(img):
 # async def get_recommendations():
 def get_recommendations():
     endpoint = SPOTIFY_URL + "/recommendations?"
-    seed_tracks = Tracks.query.filter_by(room=g.room).order_by(Tracks.position.desc())
+    seed_tracks = (
+        Tracks.query.filter_by(room=g.room).order_by(Tracks.position.desc()).all()
+    )
+
+    if len(seed_tracks) < 5:
+        return
+
     seed_tracks = [track.id for track in seed_tracks[-5:]]
+
     query = {
         "seed_tracks": ",".join(seed_tracks),
         "min_popularity": 70,

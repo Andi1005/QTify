@@ -15,25 +15,26 @@ def create_app():
     except OSError:
         pass
 
-    print(app.instance_path) # DEBUG
-
     db_path = os.path.join(app.instance_path, "db.sqlite3")
-    app.config ["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{db_path}"
-    app.config ["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{db_path}"
+    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
     from . import models
+
     models.db.init_app(app)
     with app.app_context():
         models.db.create_all()
         models.delete_old_rows()
 
     from .views import views
+
     app.register_blueprint(views)
 
     return app
 
+
 app = create_app()
 
 if __name__ == "__main__":
-    if 'liveconsole' not in gethostname():
+    if "liveconsole" not in gethostname():
         app.run(debug=True)

@@ -228,7 +228,7 @@ header.room-header {
 
 .headline {
   box-sizing: border-box;
-  margin: 20px;
+  margin: 20px auto;
   width: 80%;
   background: #4d4d4d;
   font-size: 18px;
@@ -295,6 +295,11 @@ img.track-image {
   height: 50vh;
   overflow-y: scroll;
   overflow-x: hidden;
+}
+
+#queue-view {
+  height: 80%;
+  overflow-y: hidden;
 }
 
 .track-preview {
