@@ -243,7 +243,7 @@ header.room-header {
   box-sizing: border-box;
   width: 100%;
   height: 6vmin;
-  min-height: 24px;
+  min-height: 30px;
   background-color: #4d4d4d;
   display: flex; /*When activ set to flex*/
   align-items: center;
@@ -298,8 +298,9 @@ img.track-image {
 }
 
 #queue-view {
-  height: 80%;
+  height: 50vh;
   overflow-y: scroll;
+  overflow-x: hidden;
 }
 
 .track-preview {
@@ -339,6 +340,7 @@ img.track-image {
   background: none;
   border: none;
   border-bottom: 2px solid #4d4d4d;
+  z-index: 2;
 }
 
 #menu {
