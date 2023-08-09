@@ -108,6 +108,33 @@ def get_current_track():
         return 204
 
 
+@auth.check_token
+def get_queue():
+    QUEUE_LENGTH = 10
+
+    endpoint = SPOTIFY_URL + "/me/player/queue"
+    response = requests.get(endpoint, headers=make_header())
+
+    if not response.status_code == 200:
+        raise Exception
+
+    response_dict = response.json()
+
+    # May be used later instead of requesting the current track separate.
+    currently_playing = response_dict["currently_playing"]
+
+    queue = [
+        {
+            "name": track["name"],
+            "artist": ", ".join([artist["name"] for artist in track["artists"]]),
+            "image_url": track["album"]["images"][0]["url"],
+        }
+        for track in response_dict["queue"][:QUEUE_LENGTH]
+    ]
+
+    return queue
+
+
 def get_track_info(id):
     endpoint = SPOTIFY_URL + f"/tracks/{id}?"
     query = {

@@ -164,6 +164,7 @@ def current_track():
         .order_by(Tracks.position.desc())
         .first()
     )
+
     if track_in_queue:
         g.room.position_in_queue = track_in_queue.position
         db.session.commit()
@@ -174,12 +175,15 @@ def current_track():
     recommendations = api.get_recommendations()
     current_track.update({"similar_tracks": recommendations})
 
-    queue = [
-        {"name": track.name, "artist": track.artist, "image_url": track.image_url}
-        for track in g.room.queue.order_by(Tracks.position)[
-            g.room.position_in_queue + 1 :
-        ]
-    ]
+    # queue = [
+    #    {"name": track.name, "artist": track.artist, "image_url": track.image_url}
+    #    for track in g.room.queue.order_by(Tracks.position)[
+    #        g.room.position_in_queue + 1 :
+    #    ]
+    # ]
+
+    queue = api.get_queue()
+
     current_track.update({"queue": queue})
 
     return current_track

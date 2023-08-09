@@ -8,7 +8,11 @@ from .config import CLIENT_ID, CLIENT_SECRET, SERVER_URL
 from .models import db
 
 SPOTIFY_URL = "https://accounts.spotify.com"
-SCOPES = ["user-read-currently-playing", "user-modify-playback-state"]
+SCOPES = [
+    "user-read-currently-playing",
+    "user-read-playback-state",
+    "user-modify-playback-state",
+]
 
 
 def generate_client_auth():

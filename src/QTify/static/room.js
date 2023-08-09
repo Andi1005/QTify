@@ -83,11 +83,13 @@ function onSpotifyActiv() {
 
 function updateTrackInfo(trackInfo) {
   document.querySelector("#current-track-image").src = trackInfo.image;
-
-  if (!trackInfo.color === undefined){
+  
+  if (!(trackInfo.color === undefined)){
     c = trackInfo.color;
-    rgba = `rgba(${c[0]}, ${c[1]}, ${c[2]}, 0.5)`;
-    document.querySelector("#current-track-image").style.boxShadow = "0px 0px 400px 0px " + rgba;
+    document.querySelector("#current-track-image").style.boxShadow = "0px 0px 200px 15px" + c;
+  }
+  else {
+    document.querySelector("#current-track-image").style.boxShadow = "none";
   }
     
   document.querySelector("#current-track-name").innerHTML = trackInfo.name;
