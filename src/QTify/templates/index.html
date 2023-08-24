@@ -9,7 +9,7 @@
     <div id="button-container">
         <a class="join-btn" href="{{ url_for('views.join') }}">Raum betreten</a>
         {% if is_host %}
-        <a class="host-btn" href="{{ url_for('views.host') }}">Dein Raum Beitreiten</a>
+        <a class="host-btn" href="{{ url_for('views.host') }}">Deinen Raum betreten</a>
         <a class="sign-out-btn" href="{{ url_for('views.sign_out') }}" >Oder abmelden</a>
         {% else %}
         <a class="host-btn" href="{{ url_for('views.host') }}">Raum erstellen</a>
@@ -18,7 +18,7 @@
 </main>
 
 <footer>
-    <p>A programm made by Andreas Hars</p>
-    <p>Check out my <a class="link" href="https://github.com/Andi1005" target="_blank">GitHub</a></p>
+    <p>Ein Programm von Andreas Hars</p>
+    <p>Besuche meinen <a class="link" href="https://github.com/Andi1005" target="_blank">GitHub</a></p>
 </footer>
 {% endblock %}

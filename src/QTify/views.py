@@ -197,15 +197,9 @@ def queue():
         if not type(track_uri) is str:
             abort(400)
 
-        already_in_queue = g.room.queue.filter_by(id=track_id).first()
-        if already_in_queue:
-            already_in_queue = (
-                g.room.queue.filter_by(id=track_id)
-                .order_by(Tracks.position.desc())
-                .first()
-            )
-            if already_in_queue.position > g.room.position_in_queue:
-                return "Already in queue", 304
+        for queue_entry in api.get_queue():
+            if queue_entry["track_uri"] == track_uri:
+                return "Already in Queue", 304
 
         api.add_to_queue(track_uri)
 

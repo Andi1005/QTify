@@ -19,6 +19,7 @@ function buildQueryString(endpoint, query) {
   return url + endpoint + "?" + params.toString();
 }
 
+// Message Flash
 function flashMessage(msg) {
   messageBox = document.getElementsByClassName("message-flash")[0];
   messageBox.innerHTML = msg;
@@ -167,11 +168,11 @@ function skipTrack() {
 skipTrackReq.onreadystatechange = function(){
   if (this.readyState == 4) {
     if (this.status == 204) {
-      flashMessage("Skiped");
-      requestTrackInfo()
+      flashMessage("Übersprungen");
+      requestTrackInfo();
     }
     else {
-      flashMessage("Something went wrong");
+      flashMessage("Etwas ist schief gelaufen.");
     }
     document.getElementById("skip-btn").blur();
   }
@@ -271,7 +272,10 @@ function generateOnClick(track_uri) {
   addToQueueReq.onreadystatechange = function(){
     if (this.readyState == 4) {
       if (this.status == 204) {
-        flashMessage("Added to playback queue")
+        flashMessage("Zur Warteschlange hinzugefügt")
+      }
+      else if (this.status == 304) {
+        flashMessage("Dieser Song ist schon in der Warteschlange.")
       }
     }
   }

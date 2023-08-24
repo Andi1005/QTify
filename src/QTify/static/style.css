@@ -38,7 +38,7 @@ input[type=number] {
 
 .message-flash {
   position: fixed;
-  bottom: -50px;
+  bottom: -100px;
   z-index: 3;
   background-color: lightgrey;
   padding: 1em;
@@ -48,7 +48,7 @@ input[type=number] {
 }
 
 .message-flash.activ {
-  transform: translateY(-80px);
+  transform: translateY(-120px);
 }
 
 #for-spotify-label {

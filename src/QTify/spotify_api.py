@@ -128,6 +128,7 @@ def get_queue():
             "name": track["name"],
             "artist": ", ".join([artist["name"] for artist in track["artists"]]),
             "image_url": track["album"]["images"][0]["url"],
+            "track_uri": track["uri"],
         }
         for track in response_dict["queue"][:QUEUE_LENGTH]
     ]
