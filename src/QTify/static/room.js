@@ -77,7 +77,7 @@ function onSpotifyInactiv() {
 
 function onSpotifyActiv() {
   spotifyIsActitiv = true;
-  document.querySelector("#current-track").style.display = "block";
+  document.querySelector("#search").style.display = "block";
   document.querySelector("#not-activ-error").style.display = "none";
 }
 
@@ -389,3 +389,4 @@ function hideQROverlay() {
 
 QRCode = new QRCode(document.getElementById("qrcode"), url + "/room/" + pin);
 document.getElementById("room-pin").innerHTML = pin;
+document.getElementsByClassName("domain").innerHTML = url

@@ -16,7 +16,7 @@
             <span id="title">
                 <p id="app-name">QTify</p>
                 <span id="for-spotify-label">
-                    <p>for&nbsp;</p> 
+                    <p>für&nbsp;</p> 
                     <a href="https://spotify.com">
                         <img class="spotify-logo" src="{{ url_for('static', filename='Spotify_Logo_RGB_Green.png') }}" alt="Spotify">
                     </a>
@@ -36,15 +36,15 @@
                     <p class="track-label track-name" id="current-track-name"></p>
                     <p class="track-label track-artists" id="current-track-artists"></p>
                 </span>
-                {% if user_can_skip %}
+            </div>
+            <progress id="track-progress"></progress>
+            {% if user_can_skip %}
                 <span>
                     <button id="skip-btn" class="btn-no-style material-symbols-outlined" onclick="skipTrack()">
                         skip_next
                     </button>
                 </span>
                 {% endif %}
-            </div>
-            <progress id="track-progress"></progress>
             <span id="is-paused">Pausiert</span>
         </div>
         <div id="search" class="main-tab">
@@ -109,7 +109,7 @@
             <div id="qrcode"></div>
             <p>
                 Scanne diesen QR-Code auf einem anderen Gerät, um dem Raum beizutreten.<br/>
-                Oder gehe auf /join und gebe den Code unten ein:
+                Oder gehe auf <span class="domain"></spam>/join und gebe den Code unten ein:
             </p>
             <h2 id="room-pin"></h2> 
         </div>

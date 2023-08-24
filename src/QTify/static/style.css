@@ -234,9 +234,14 @@ header.room-header {
   font-size: 18px;
 }
 
-#search, #queue {
+#search {
+  display: block;
+  width: 78vw;
+}
+
+#queue {
   display: none;
-  width: 78vw
+  width: 78vw;
 }
 
 #search-bar {
