@@ -133,21 +133,9 @@ def join():
     return render_template("join.html")
 
 
-@views.route("/room/<int:pin>", methods=("GET", "POST"))
+@views.route("/room/<int:pin>")
 @pin_required
 def room(pin):
-    if request.method == "POST":
-        track_uri = request.args.get("track_uri")
-        if type(track_uri) is str:
-            api.add_to_queue(track_uri)
-
-            id = api.uri_to_id(track_uri)
-            track = Tracks(room_pin=g.room.pin, **api.get_track_info(id))
-            db.session.add(track)
-            db.session.commit()
-
-        else:
-            abort(400)
     return render_template("room.html", user_can_skip=g.room.skip)
 
 

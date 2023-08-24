@@ -154,7 +154,6 @@ def get_track_info(id):
             "artist": response_dict["artists"][0]["name"],
             "artist_id": response_dict["artists"][0]["id"],
             "image_url": image_url,
-            "color": find_dominant_color(request_image(image_url)),
         }
 
         return track_info
@@ -163,29 +162,7 @@ def get_track_info(id):
         raise Exception
 
 
-def find_dominant_color(img):
-    NUM_CLUSTERS = 5
-
-    arr = np.asarray(img)
-    shape = arr.shape
-    arr = arr.reshape(scipy.product(shape[:2]), shape[2]).astype(float)
-
-    codes, _ = scipy.cluster.vq.kmeans(arr, NUM_CLUSTERS)
-
-    vecs, _ = scipy.cluster.vq.vq(arr, codes)  # assign codes
-    counts, _ = scipy.histogram(vecs, len(codes))  # count occurrences
-    # find most frequent
-    index_max = scipy.argmax(counts)
-    peak = codes[index_max]
-
-    rgb = tuple(int(c) for c in peak)
-    hex_color = "#%02x%02x%02x" % rgb
-
-    return hex_color
-
-
 @auth.check_token
-# async def get_recommendations():
 def get_recommendations():
     endpoint = SPOTIFY_URL + "/recommendations?"
     seed_tracks = (
