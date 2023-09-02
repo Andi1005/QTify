@@ -116,6 +116,7 @@ footer#credits {
   }
 }
 
+/*
 @media screen and (min-width: 601px) {
   p {
     font-size: 2.5vmin !important;
@@ -129,10 +130,8 @@ footer#credits {
   #home-btn, #qr-btn, #skip-btn {
     font-size: 3.5vmin !important;
   }
-  #search-back-btn, #search-btn {
-    font-size: 3.5vmin !important;
-  }
 }
+*/
 
 
 /* ---Specific to room.html--- */
@@ -231,23 +230,24 @@ header.room-header {
   margin: 20px auto;
   width: 80%;
   background: #4d4d4d;
-  font-size: 18px;
+  font-size: 1.1rem;
+  color: #b3b3b3;
 }
 
 #search {
   display: block;
-  width: 78vw;
+  width: 80vw;
 }
 
 #queue {
   display: none;
-  width: 78vw;
+  width: 80vw;
 }
 
 #search-bar {
   box-sizing: border-box;
   width: 100%;
-  height: 6vmin;
+  height: 10vmin;
   min-height: 30px;
   background-color: #4d4d4d;
   display: flex; /*When activ set to flex*/
@@ -264,19 +264,33 @@ header.room-header {
   border: none;
 }
 
-#search-back-btn, #search-btn {
-  font-size: inherit;
-}
-
 #search-field {
   width: 100%;
   padding: 1px 0;
   margin: 0px 10px;
+  font-size: 1.1rem;
 }
 
 #search-field:focus {
   outline: none;
   border-bottom: 2px solid white;
+}
+
+#search-field::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: #b3b3b3;
+  opacity: 1; /* Firefox */
+}
+
+#search-field:-ms-input-placeholder { /* Internet Explorer 10-11 */
+  color: #b3b3b3;
+}
+
+#search-field::-ms-input-placeholder { /* Microsoft Edge */
+  color: #b3b3b3;
+}
+
+#search-back-btn, #search-btn {
+  font-size: 5vmin;
 }
 
 #search-back-btn {
@@ -324,13 +338,24 @@ img.track-image {
   transition: 0.1s;
 }
 
+#current-track-labels {
+  margin: 5px;
+}
+
 .track-artists, .track-name {
   width: 100%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   text-align: left;
-  margin-left: 0.4em;
+  margin-left: 0.5em;
+  color: #b3b3b3;
+  font-size: 1.1rem;
+}
+
+.track-artists {
+  margin-top: 0.15em;
+  font-size: 0.9rem
 }
 
 #track-progress {

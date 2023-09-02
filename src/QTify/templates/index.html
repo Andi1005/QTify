@@ -1,24 +1,36 @@
-{% extends 'base.html' %}
-
-{% block content %}
-<header>
-    <h1 class="app-title"><a class="app-title" href="{{ url_for('views.index') }}">QTify</a></h1>
-</header>
-
-<main>
-    <div id="button-container">
-        <a class="join-btn" href="{{ url_for('views.join') }}">Raum betreten</a>
-        {% if is_host %}
-        <a class="host-btn" href="{{ url_for('views.host') }}">Deinen Raum betreten</a>
-        <a class="sign-out-btn" href="{{ url_for('views.sign_out') }}" >Oder abmelden</a>
-        {% else %}
-        <a class="host-btn" href="{{ url_for('views.host') }}">Raum erstellen</a>
-        {% endif %}
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QTify</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="content">
+        <header>
+            <h1 class="app-title"><a class="app-title" href="{{ url_for('views.index') }}">QTify</a></h1>
+        </header>
+        
+        <main>
+            <div id="button-container">
+                <a class="join-btn" href="{{ url_for('views.join') }}">Raum betreten</a>
+                {% if is_host %}
+                <a class="host-btn" href="{{ url_for('views.host') }}">Deinen Raum betreten</a>
+                <a class="sign-out-btn" href="{{ url_for('views.sign_out') }}" >Oder abmelden</a>
+                {% else %}
+                <a class="host-btn" href="{{ url_for('views.host') }}">Raum erstellen</a>
+                {% endif %}
+            </div>
+        </main>
+        
+        <footer>
+            <p>Ein Programm von Andreas Hars</p>
+            <p>Besuche meinen <a class="link" href="https://github.com/Andi1005" target="_blank">GitHub</a></p>
+        </footer>
     </div>
-</main>
+</body>
+</html>
 
-<footer>
-    <p>Ein Programm von Andreas Hars</p>
-    <p>Besuche meinen <a class="link" href="https://github.com/Andi1005" target="_blank">GitHub</a></p>
-</footer>
-{% endblock %}
+
+
