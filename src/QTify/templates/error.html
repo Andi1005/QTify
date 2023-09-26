@@ -11,11 +11,8 @@
         <h1>Oops!</h1>
         <h2>Error {{ status_code }}</h2>
         <p>{{ description }}</p>
-        <p>Versuche doch eine der Optionen unten:</p>
         <div id="error-links-container">
-            <a class="link-no-style button" href="{{ url_for('views.index') }}">Home</a>
-            <a class="link-no-style button" onclick="window.location.href = document.referrer" href="{{ last_page }}">Letze Seite</a>
-            <a class="link-no-style button">Hilfe</a>
+            <a class="link-no-style button" href="{{ url_for('views.index') }}">Zurück zum Hauptmenü</a>
         </div>
     </main>
 </body>

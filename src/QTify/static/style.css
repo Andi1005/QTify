@@ -235,7 +235,7 @@ header.room-header {
 }
 
 #search {
-  display: block;
+  display: none;
   width: 80vw;
 }
 

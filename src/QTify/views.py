@@ -28,12 +28,22 @@ def pin_required(func):
 
         room = db.session.query(Rooms).filter_by(pin=pin).first()
         if room is None:
-            abort(404)  # Room not found in database
+            # Room not found in database
+            return render_template(
+                "error.html",
+                status_code=404,
+                description="Es sieht so aus, als ob der Raum, dem du Beitreten möchtest nicht existiert.\nVielleicht ist der Raum abgelaufen oder du hast den Pin falsch eingegeben.",
+            )
 
         if room.expires_at < time.time():
             Rooms.query.filter_by(pin=pin).delete()
             db.session.commit()
-            abort(410)  # Room is expired
+            # Room is expired
+            return render_template(
+                "error.html",
+                status_code=410,
+                description="Der Raum, dem du beitreten möchtes, ist bereits abgelaufen. Bitte kontaktiere den Host, damit er einen neuen erstellt.",
+            )
 
         g.pin = pin
         g.room = room
@@ -231,5 +241,6 @@ def error_page(error):
     return render_template(
         "error.html",
         status_code=error.get_response().status_code,
-        description=error.description,
+        description="Ein Fehler ist aufgetreten.\nBitte versuche es nochmal."
+        # description=error.description,
     )
