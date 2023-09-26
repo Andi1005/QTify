@@ -6,6 +6,7 @@ The name QTify is a mix of "Queue" and "Spotify" :)
 
 # How to access QTify
 The website is hosted on [Pythonanywhere.com](https://eu.pythonanywhere.com) and can be accessed at [qtify.eu.pythonanywhere.com](http://qtify.eu.pythonanywhere.com/)
+On desktop the website may appear strange due to its focus on mobile browsers.
 
 # Using QTify
 On the index page you can choose to either create a new room or to join an existing one:
