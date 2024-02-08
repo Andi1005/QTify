@@ -4,6 +4,10 @@ Anybody with a code can access it, so you don't have to pass your phone around.
 
 The name QTify is a mix of "Queue" and "Spotify" :)
 
+# Outdated
+At the time when I delveoped this app, there was no such feture in the normal Spotify. Now they have the same function with Spotify Yam.
+Because of this the website is no longer avalible in the internet. Still, I am keeping the surce code here.
+
 # How to access QTify
 The website is hosted on [Pythonanywhere.com](https://eu.pythonanywhere.com) and can be accessed at [qtify.eu.pythonanywhere.com](http://qtify.eu.pythonanywhere.com/). 
 On desktop the website may appear strange due to its focus on mobile browsers.
